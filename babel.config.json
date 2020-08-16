@@ -1,0 +1,13 @@
+{
+  "plugins": [
+  ],
+  "presets": [
+    ["@babel/preset-env", {
+      "useBuiltIns": "entry",
+      "corejs": 3,
+      "loose": true,
+      "forceAllTransforms": false,
+      "targets": "ie 11, defaults, not dead"
+    }]
+  ]
+}
