@@ -1,4 +1,4 @@
-import { matchString } from '../../matchString';
+import { matchString } from '../../src';
 
 const testData = [
   ['fUz', ['fuz--', '--fuz', 'f--uz', 'fu--z', '-fuz-', 'f-u-z', 'xxfxxx-xxxuxxx-xxzxxxzzzz fu zzz']],

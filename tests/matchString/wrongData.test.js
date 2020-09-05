@@ -1,4 +1,4 @@
-import { matchString } from '../../matchString';
+import { matchString } from '../../src';
 
 const testData = [
   ['fuXXX???', ['fuz--', '--fuz', 'f--uz', 'fu--z', '-fuz-', 'f-u-z', 'xxfxxx-xxxuxxx-xxzxxxzzzz fu zzz']],
@@ -12,7 +12,6 @@ const testData = [
   ],
   ['', ['fuz--']],
   [null, ['fuz--']],
-  [123, ['123--']],
   [{}, ['fuz--']],
   [[], ['fuz--']],
   [new Date(), ['fuz--']],
@@ -20,7 +19,7 @@ const testData = [
 ];
 
 describe('matchString(...) = true', () => {
-  describe.each(testData)('%#. %s', (what, whereList) => {
+  describe.each(testData)('%#. %j', (what, whereList) => {
     test.each(whereList)('%#. %s', (where) => {
       expect(!!matchString(what, where))
         .toBe(false);

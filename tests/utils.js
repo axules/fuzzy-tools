@@ -10,9 +10,21 @@ function generateWord(len) {
     .join('');
 }
 
+function generateFuzzyWord(text) {
+  const len = text.length;
+  let what = '';
+  for (
+    let i = getRandom(0, 20);
+    i < len;
+    i = getRandom(i + 1, i + 20)
+  ) {
+    what += text[i] || '';
+  }
+  return what;
+}
+
 function generatePair(len = 256) {
   let where = '';
-  let what = '';
   let l = 0;
 
   for (let i = len; i > 0; i = len - where.length) {
@@ -21,15 +33,7 @@ function generatePair(len = 256) {
   }
   where = where.slice(0, len);
 
-  for (
-    let i = getRandom(0, 20);
-    i < len;
-    i = getRandom(i + 1, i + 20)
-  ) {
-    what += where[i] || '';
-  }
-
-  return { what, where };
+  return { what: generateFuzzyWord(where), where };
 }
 
 export function generateTrueCases(count = 100, len = 250) {

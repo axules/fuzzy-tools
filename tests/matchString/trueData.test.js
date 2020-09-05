@@ -1,7 +1,9 @@
-import { matchString } from '../../matchString';
+import { matchString } from '../../src';
 
 const testData = [
   ['fuz', ['fuz--', '--fuz', 'f--uz', 'fu--z', '-fuz-', 'f-u-z', 'xxfxxx-xxxuxxx-xxzxxxzzzz fu zzz']],
+  [123, ['123--', '--1-2-3--']],
+  [12.99, ['12.99--', '--1-2-.-9-9']],
   [
     'vu80u581q',
     [

@@ -1,22 +1,25 @@
-import { isString, defaultOptions, isFunction, getIndexOf } from './utils';
+import { defaultOptions, isFunction, getIndexOf } from './utils';
+
+function computeScore(begin, end, fullLength, wordNumber) {
+  const wordLen = end - begin + 1;
+  const kd = (1 / fullLength) * wordLen;
+  const kp = begin;
+  const kw = 1 + (1 / fullLength) * wordNumber;
+  return kd * kp * kw;
+}
 
 export function matchString(what, where, options) {
-  if (
-    !what ||
-    !where ||
-    !isString(what) ||
-    !isString(where) ||
-    what.length > where.length
-  ) {
-    return null;
-  }
-
+  if (!what || !where) return null;
   const {
     caseInsensitive,
     withScore,
     withWrapper,
     withRanges
   } = defaultOptions(options);
+  const preparedWhat = caseInsensitive ? String(what).toLocaleLowerCase() : String(what);
+  const preparedWhere = String(where);
+  if (!preparedWhat || !preparedWhere || preparedWhat.length > preparedWhere.length) return null;
+
   let wrapped = null;
   let ranges = null;
   let chunkBegin = 0;
@@ -29,58 +32,46 @@ export function matchString(what, where, options) {
   const wordAction = (prev, next) => {
     if (prev < 0) {
       if (withWrapper) {
-        wrapped = next > 0 ? where.slice(0, next) : '';
+        wrapped = next > 0 ? preparedWhere.slice(0, next) : '';
       }
       if (withRanges) {
         ranges = [];
       }
       chunkBegin = next;
-      const firstScore = 1 - (1 / where.length) * next;
-      scoreList.push(firstScore);
     } else if (next - prev > 1) {
       if (withWrapper) {
-        const chunk = where.slice(chunkBegin, prev + 1);
-        wrapped += wrapperFunc(chunk) + where.slice(prev + 1, next);
+        const chunk = preparedWhere.slice(chunkBegin, prev + 1);
+        wrapped += wrapperFunc(chunk) + preparedWhere.slice(prev + 1, next);
       }
       if (withRanges) {
         ranges.push({
           begin: chunkBegin,
-          end: Math.min(prev, where.length - 1)
+          end: Math.min(prev, preparedWhere.length - 1)
         });
       }
       if (withScore) {
-        const a = chunkBegin;
-        const b = prev;
-        const wordLen = b - a + 1;
-        const kd = (1 / what.length) * wordLen;
-        const maxPos = where.length - wordLen + 1;
-        const kp = 1 - (1 / maxPos) * a;
-        scoreList.push(kd * kp);
-        // console.log({ a, b, wordLen, kd, kp, score: kd * kp });
+        scoreList.push(
+          computeScore(chunkBegin, prev, preparedWhat.length, scoreList.length)
+        );
       }
       chunkBegin = next;
     }
   };
 
-  const preparedWhat = caseInsensitive ? what.toLocaleLowerCase() : what;
   let pos = -1;
 
   for (let i = 0; i < preparedWhat.length; i++) {
-    const nextPos = getIndexOf(where, preparedWhat[i], pos + 1, caseInsensitive);
-    if (nextPos < 0 || nextPos >= where.length) return null;
+    const nextPos = getIndexOf(preparedWhere, preparedWhat[i], pos + 1, caseInsensitive);
+    if (nextPos < 0 || nextPos >= preparedWhere.length) return null;
     wordAction(pos, nextPos);
     pos = nextPos;
   }
-  wordAction(pos, pos + where.length);
+  wordAction(pos, pos + preparedWhere.length);
 
-  if (withScore) {
-    const wordsScore = 1 - (1 / what.length) * (scoreList.length - 2);
-    scoreList.push(wordsScore);
-  }
   return Object.assign(
     {
       score: withScore
-        ? scoreList.reduce((p, c) => p + c, 0) / scoreList.length
+        ? scoreList.reduce((p, c) => p + c, 0)
         : 1
     },
     withWrapper ? { wrapped } : {},

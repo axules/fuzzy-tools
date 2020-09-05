@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { matchString } from '../../matchString';
+import { matchString } from '../../src';
 import { generateTrueCases, generateWrongCases } from '../utils';
 
 const COUNT = 3000;

@@ -1,4 +1,4 @@
-import { matchString } from '../../matchString';
+import { matchString } from '../../src';
 
 const testData = [
   ['fuz', 'fuzzy', '<{?}>', '<fuz>zy'],
