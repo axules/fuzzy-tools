@@ -16,7 +16,7 @@
   ],
   "main": "./dist/index.js",
   "deprecated": false,
-  "description": "The fastest functions for fuzzy search and items filtering",
+  "description": "Functions for fuzzy matching and items filtering",
   "keywords": [
     "fuzzy",
     "search",
@@ -33,7 +33,7 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "npm test && babel -d dist ./src/index.js",
+    "build": "npm test && babel -d dist ./src/**/**",
     "prepack": "npm run build"
   },
   "jest": {
@@ -63,6 +63,7 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "tests"
   ]
 }
