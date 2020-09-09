@@ -75,10 +75,12 @@ function getDataExtractor(fields) {
   if (fieldsList.length == 0) return null;
   return function (value) {
     if (isString(fields)) return getValue(value, fields);
-    return fieldsList.map(function (field) {
-      return Object.assign({}, field, {
-        value: getValue(value, field.path)
-      });
-    });
+    return fieldsList.reduce(function (R, el) {
+      var _Object$assign2;
+
+      return Object.assign(R, (_Object$assign2 = {}, _Object$assign2[el.field] = el.rate === 1 ? getValue(value, el.path) : Object.assign({}, el, {
+        value: getValue(value, el.path)
+      }), _Object$assign2));
+    }, {});
   };
 }

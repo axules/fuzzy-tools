@@ -8,7 +8,7 @@ var _utils = require("./utils");
 function computeScore(begin, end, fullLength, wordNumber) {
   var wordLen = end - begin + 1;
   var kd = 1 / fullLength * wordLen;
-  var kp = begin;
+  var kp = begin || 0.001;
   var kw = 1 + 1 / fullLength * wordNumber;
   return kd * kp * kw;
 }
