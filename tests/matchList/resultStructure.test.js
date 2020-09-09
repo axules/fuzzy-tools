@@ -48,21 +48,67 @@ describe('matchList(...)', () => {
     expect(result.score).toBe(7.680000000000001);
   });
 
-  test('should contain score as a mediane of scores', () => {
+  test('should return result for array', () => {
+    const result = matchList(
+      'fzz',
+      [{ value: 'fuzza', rate: 0.75 }, { value: 'fuzzy', rate: 0.10 }]
+    );
+    expect(result).toEqual({
+      score: 2.3708148148148145,
+      matches: {
+        0: { score: 2.3708148148148145, original: 'fuzza', rate: 0.75, index: 0 },
+        1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 }
+      }
+    });
+  });
+
+  test('should return result for object', () => {
+    const result = matchList(
+      'fzz',
+      { v1: { value: 'fuzza', rate: 0.75 }, v2: { value: 'fuzzy', rate: 0.10 } }
+    );
+    expect(result).toEqual({
+      score: 2.3708148148148145,
+      matches: {
+        v1: { score: 2.3708148148148145, original: 'fuzza', rate: 0.75, index: 'v1' },
+        v2: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 'v2' }
+      }
+    });
+  });
+
+  test('should contain score as a min value of scores', () => {
     const result = matchList('fuzzz', ['fu--zz.z', '---u----', '-z-', 'f----', '----fuz----zz']);
     expect(Object.values(result.matches).length).toBe(2);
     expect(Object.keys(result.matches)).toEqual(['0', '4']);
-    expect(result.matches[0]).toEqual({ 'index': 0, 'original': 'fu--zz.z', 'score': 3.88 });
+    expect(result.matches[0]).toEqual({ 'index': 0, 'original': 'fu--zz.z', 'score': 3.8804 });
     expect(result.matches[4]).toEqual({ 'index': 4, 'original': '----fuz----zz', 'score': 7.680000000000001 });
-    expect(result.score).toBe((3.88 + 7.680000000000001) / 2);
+    expect(result.score).toBe(3.8804);
   });
 
-  test('should contain score as a mediane of scores with rates', () => {
+  test('should contain score as a min value of scores with rates', () => {
     const result = matchList('fuzzz', [{ value: 'fu--zz.z', rate: 0.5 }, '---u----', '-z-', 'f----', '----fuz----zz']);
     expect(Object.values(result.matches).length).toBe(2);
     expect(Object.keys(result.matches)).toEqual(['0', '4']);
-    expect(result.matches[0]).toEqual({ index: 0, original: { value: 'fu--zz.z', rate: 0.5 }, score: 1.94 });
+    expect(result.matches[0]).toEqual({ index: 0, original: 'fu--zz.z', rate: 0.5, score: 7.7608 });
     expect(result.matches[4]).toEqual({ index: 4, original: '----fuz----zz', score: 7.680000000000001 });
-    expect(result.score).toBe((1.94 + 7.680000000000001) / 2);
+    expect(result.score).toBe(7.680000000000001);
+  });
+
+  test('should ignore wrong rate', () => {
+    const result = matchList('fuzzz', [{ value: 'fu--zz.z', rate: 999 }, '---u----', '-z-', 'f----', '----fuz----zz']);
+    expect(Object.values(result.matches).length).toBe(2);
+    expect(Object.keys(result.matches)).toEqual(['0', '4']);
+    expect(result.matches[0]).toEqual({ index: 0, original: 'fu--zz.z', score: 3.8804 });
+    expect(result.matches[4]).toEqual({ index: 4, original: '----fuz----zz', score: 7.680000000000001 });
+    expect(result.score).toBe(3.8804);
+  });
+
+  test('should contain score as a min value of scores with rates for object', () => {
+    const result = matchList('fuzzz', { v1: { value: 'fu--zz.z', rate: 0.5 }, v2: '---u----', v3: '-z-', v4: 'f----', v5: '----fuz----zz' });
+    expect(Object.values(result.matches).length).toBe(2);
+    expect(Object.keys(result.matches)).toEqual(['v1', 'v5']);
+    expect(result.matches.v1).toEqual({ index: 'v1', original: 'fu--zz.z', rate: 0.5, score: 7.7608 });
+    expect(result.matches.v5).toEqual({ index: 'v5', original: '----fuz----zz', score: 7.680000000000001 });
+    expect(result.score).toBe(7.680000000000001);
   });
 });

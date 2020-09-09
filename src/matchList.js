@@ -1,26 +1,41 @@
 import { defaultOptions, isString, isObject } from './utils';
 import { matchString } from './matchString';
 
+function isValidRate(rate) {
+  return rate === null || (rate > 0 && rate <= 1);
+}
+
 export function matchList(what, whereList, options) {
   if (
     !what ||
     !whereList ||
-    !Array.isArray(whereList) ||
+    (!Array.isArray(whereList) && !isObject(whereList)) ||
     whereList.length == 0
   ) {
     return null;
   }
 
+  const isArray = Array.isArray(whereList);
   const { withScore } = defaultOptions(options);
-  const results = whereList.reduce((R, el, i) => {
-    const result = matchString(what, isString(el) ? el : el.value, options);
+  const results = Object.entries(whereList).reduce((R, [key, el]) => {
+    const elValue = !el || isString(el) ? el : el.value;
+    let elRate = isObject(el) && Object.prototype.hasOwnProperty.call(el, 'rate') ? el.rate : null;
+    if (!isValidRate(elRate)) {
+      console.warn(
+        'fuzzy-tools',
+        'rate should be `> 0` and `<= 1`, another value will be ignored. Current value: ',
+        elRate
+      );
+      elRate = null;
+    }
+    const result = matchString(what, elValue, options);
     if (result) {
-      R[i] = Object.assign(
+      R[key] = Object.assign(
         result,
-        { original: el, index: i },
-        isObject(el) && Object.prototype.hasOwnProperty.call(el, 'rate')
-          ? { score: result.score * el.rate }
-          : {}
+        { original: elValue, index: isArray ? Number(key) : key },
+        elRate === null
+          ? {}
+          : { score: result.score / el.rate, rate: elRate }
       );
     }
     return R;
@@ -31,13 +46,10 @@ export function matchList(what, whereList, options) {
 
   const values = Object.values(results);
   return values.reduce(
-    (R, el, i) => {
-      R.score += el.score;
-      if (i > 0 && i === values.length - 1) {
-        R.score /= values.length;
-      }
+    (R, el) => {
+      R.score = Math.min(R.score, el.score);
       return R;
     },
-    { score: 0, matches: results }
+    { score: Number.POSITIVE_INFINITY, matches: results }
   );
 }

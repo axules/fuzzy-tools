@@ -1,11 +1,11 @@
 import { matchString } from '../../src';
 
 const equalScoreData = [
-  ['fuz', 0, ['fuz--', 'fuz', 'fuz----']],
+  ['fuz', 0.001, ['fuz--', 'fuz', 'fuz----']],
   ['fuz', 2, ['--fuz--', '--fuz', '--fuz----']],
   ['fuz', 5.777777777777777, ['--f-u-z--', '--f-u-z', '--f-u-z----']],
   ['fuz', 4.444444444444444, ['-f-u-z--', '-f-u-z', '-f-u-z----']],
-  ['fuz', 3.1111111111111107, ['f-u-z--', 'f-u-z', 'f-u-z----']],
+  ['fuz', 3.111444444444444, ['f-u-z--', 'f-u-z', 'f-u-z----']],
 ];
 
 describe('Score test', () => {

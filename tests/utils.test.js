@@ -14,7 +14,7 @@ describe('getValue', () => {
 
     [{ a: 10 }, 'a', 10],
     [{ a: 10 }, 'a1', undefined],
-    [{ a1: { child: 99 } }, 'a1.child.child2', undefined],
+    [{ a1: { child: 0.99 } }, 'a1.child.child2', undefined],
     [{ a: { b: 10 }, a2: 1 }, 'a', { b: 10 }],
     [{ a: { b: 10 }, a2: 1 }, ['a'], { b: 10 }],
     [{ a: { b: 10 }, a2: 1 }, 'a.b', 10],
@@ -65,17 +65,17 @@ describe('getDataExtractor', () => {
 
   describe('getDataExtractor(...)(v) should return field with value', () => {
     const extractorData = [
-      [['f1', 'f2'], { f1: 'aa', f2: 'bb', f3: 'cc' }, [makeField('f1', 'aa'), makeField('f2', 'bb')]],
-      [['f1'], { f1: 'aa', f2: 'bb', f3: 'cc' }, [makeField('f1', 'aa')]],
+      [['f1', 'f2'], { f1: 'aa', f2: 'bb', f3: 'cc' }, { f1: 'aa', f2: 'bb' }],
+      [['f1'], { f1: 'aa', f2: 'bb', f3: 'cc' }, { f1: 'aa' }],
       ['f1', { f1: 'aa', f2: 'bb', f3: 'cc' }, 'aa'],
       ['f1.a.2', { f1: { a: ['aa', 'bb', 'cc'] } }, 'cc'],
       ['f1.a.2', {}, undefined],
       ['f1.a.2', null, undefined],
       ['f1.aaa.2', { f1: { a: ['aa', 'bb', 'cc'] } }, undefined],
-      [{ f2: 'zzzz' }, { f1: 'aa', f2: 'bb' }, [makeField('f2', 'bb', 1)]],
-      [{ f2: 99 }, { f1: 'aa', f2: 'bb' }, [makeField('f2', 'bb', 99)]],
-      [{ f2: 1.2 }, { f1: 'aa', f2: 'bb' }, [makeField('f2', 'bb', 1.2)]],
-      [{ f2: 0.7, f1: 0.3 }, { f1: 'aa', f2: 'bb' }, [makeField('f2', 'bb', 0.7), makeField('f1', 'aa', 0.3)]],
+      [{ f2: 'zzzz' }, { f1: 'aa', f2: 'bb' }, { f2: 'bb' }],
+      [{ f2: 99 }, { f1: 'aa', f2: 'bb' }, { f2: makeField('f2', 'bb', 99) }],
+      [{ f2: 1.2 }, { f1: 'aa', f2: 'bb' }, { f2: makeField('f2', 'bb', 1.2) }],
+      [{ f2: 0.7, f1: 0.3 }, { f1: 'aa', f2: 'bb' }, { f2: makeField('f2', 'bb', 0.7), f1: makeField('f1', 'aa', 0.3) }],
     ];
 
     test.each(extractorData)('%#. getDataExtractor(%j)(%j)', (fields, value, expected) => {

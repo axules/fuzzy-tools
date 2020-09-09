@@ -56,6 +56,15 @@ export function getDataExtractor(fields) {
   if (fieldsList.length == 0) return null;
   return (value) => {
     if (isString(fields)) return getValue(value, fields);
-    return fieldsList.map((field) => ({ ...field, value: getValue(value, field.path) }));
+    return fieldsList.reduce(
+      (R, el) => Object.assign(
+        R,
+        { [el.field]: el.rate === 1
+          ? getValue(value, el.path)
+          : { ...el, value: getValue(value, el.path) }
+        }
+      ),
+      {}
+    );
   };
 }

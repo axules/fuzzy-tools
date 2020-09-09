@@ -3,7 +3,7 @@ import { defaultOptions, isFunction, getIndexOf } from './utils';
 function computeScore(begin, end, fullLength, wordNumber) {
   const wordLen = end - begin + 1;
   const kd = (1 / fullLength) * wordLen;
-  const kp = begin;
+  const kp = begin || 0.001;
   const kw = 1 + (1 / fullLength) * wordNumber;
   return kd * kp * kw;
 }

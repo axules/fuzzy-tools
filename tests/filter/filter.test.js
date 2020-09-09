@@ -42,13 +42,68 @@ describe('filter', () => {
       .toEqual([{ value: '---f-u-z', w: '---<f>-<u>-<z>' }, { value: 'fuz', w: '<fuz>' }]);
   });
 
+  test('should return filtered list, extract is array', () => {
+    const items = [{ v: '---f-u-z' }, { v: 'string', v2: 'ffuuzz' }, { v: 'fuz' }, { v: 'f-uz--', v2: 'ffffffuzzzzz' }];
+    const result = filter('fuZ', items, { extract: ['v', 'v2'], itemWrapper: (el, r) => ({ ...el, decision: r }) });
+    expect(result)
+      .toEqual([
+        { v: '---f-u-z', decision: {
+          matches: {
+            v: {
+              index: 'v',
+              original: '---f-u-z',
+              score: 7.11111111111111,
+            },
+          },
+          score: 7.11111111111111,
+        } },
+        { v: 'string', v2: 'ffuuzz', decision: {
+          matches: {
+            v2: {
+              index: 'v2',
+              original: 'ffuuzz',
+              score: 3.111444444444444,
+            },
+          },
+          score: 3.111444444444444,
+        } },
+        { v: 'fuz', decision: {
+          matches: {
+            v: {
+              index: 'v',
+              original: 'fuz',
+              score: 0.001,
+            },
+          },
+          score: 0.001,
+        } },
+        { v: 'f-uz--', v2: 'ffffffuzzzzz', decision: {
+          matches: {
+            v: {
+              index: 'v',
+              original: 'f-uz--',
+              score: 1.778111111111111,
+            },
+            v2: {
+              index: 'v2',
+              original: 'ffffffuzzzzz',
+              score: 5.333666666666667,
+            },
+          },
+          // should be a min of matched scores
+          score: 1.778111111111111,
+        } }
+      ]);
+  });
+
   test('should return filtered list with wrapped, extract is array', () => {
     const items = [{ v: '---f-u-z' }, { v: 'string', v2: 'ffuuzz' }, { v: 'fuz' }];
-    expect(filter('fuZ', items, {
+    const result = filter('fuZ', items, {
       extract: ['v', 'v2'],
       withWrapper: '<{?}>',
-      itemWrapper: (el, { matches: m }) => ({ v: (m[0]||m[1]).wrapped })
-    }))
+      itemWrapper: (el, { matches: m }) => ({ v: (m.v||m.v2).wrapped })
+    });
+    expect(result)
       .toEqual([{ v: '---<f>-<u>-<z>' }, { v: '<f>f<u>u<z>z' }, { v: '<fuz>' }]);
   });
 
@@ -59,22 +114,42 @@ describe('filter', () => {
 
   test('should return filtered list with string extract for deep field', () => {
     const items = [{ data: { v: '---Ffff-u-z' } }, { value: 'string' }];
-    expect(filter('fuZ', items, { extract: 'data.v' })).toEqual([{ data: { v: '---Ffff-u-z' } }]);
+    expect(filter('fuZ', items, { extract: 'data.v' }))
+      .toEqual([{ data: { v: '---Ffff-u-z' } }]);
   });
 
   test('should return filtered list with function extract', () => {
     const items = [{ v: '---f-u-z' }, { v: 'string' }, { v: 'fuZ' }];
-    expect(filter('fUz', items, { extract: el => el.v })).toEqual([{ v: '---f-u-z' }, { v: 'fuZ' }]);
+    expect(filter('fUz', items, { extract: el => el.v }))
+      .toEqual([{ v: '---f-u-z' }, { v: 'fuZ' }]);
+  });
+
+  test('should return filtered list with function extract returns Object', () => {
+    const items = [{ v: '---f-u-z' }, { v: 'string' }, { v: 'fuZ' }];
+    expect(filter('fUz', items, { extract: el => ({ val: el.v }) }))
+      .toEqual([{ v: '---f-u-z' }, { v: 'fuZ' }]);
+  });
+
+  test('should return filtered list with function extract returns Array of Strings', () => {
+    const items = [{ v: '---f-u-z' }, { v: 'string' }, { v: 'fuZ' }];
+    expect(filter('fUz', items, { extract: el => [el.v] }))
+      .toEqual([{ v: '---f-u-z' }, { v: 'fuZ' }]);
+  });
+
+  test('should return filtered list with function extract returns Array of Objects', () => {
+    const items = [{ v: '---f-u-z' }, { v: 'string' }, { v: 'fuZ' }];
+    expect(filter('fUz', items, { extract: el => [{ value: el.v, rate: 0.99 }] }))
+      .toEqual([{ v: '---f-u-z' }, { v: 'fuZ' }]);
   });
 
   test('should return filtered object list with object extract', () => {
     const items = [{ v1: '---f-u-z' }, { v1: 'string' }, { v2: 'fuZ' }];
-    expect(filter('fUz', items, { extract: { v1: 1, v2: 2 } })).toEqual([{ v1: '---f-u-z' }, { v2: 'fuZ' }]);
+    expect(filter('fUz', items, { extract: { v1: 0.5, v2: 1 } })).toEqual([{ v1: '---f-u-z' }, { v2: 'fuZ' }]);
   });
 
   test('should return filtered and wrapped list', () => {
     const items = [{ v1: '---f-u-z' }, { v1: 'string' }, { v2: 'fuZ' }];
-    expect(filter('fUz', items, { extract: { v1: 1, v2: 2 }, itemWrapper: (el, match) => ({ v: el.v1 || el.v2, score: match.score }) }))
-      .toEqual([{ v: '---f-u-z', score: 7.11111111111111 }, { v: 'fuZ', score: 0 }]);
+    expect(filter('fUz', items, { extract: { v1: 0.75, v2: 1 }, itemWrapper: (el, match) => ({ v: el.v1 || el.v2, score: match.score }) }))
+      .toEqual([{ v: '---f-u-z', score: 9.48148148148148 }, { v: 'fuZ', score: 0.001 }]);
   });
 });

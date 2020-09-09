@@ -40,6 +40,15 @@ describe('match', () => {
     expect(matchString).toHaveBeenCalledTimes(0);
   });
 
+  test('should call matchList for object', () => {
+    const options = { opt1: 10 };
+    const strings = { f1: 'a', f2: 'b' };
+    match('fuz', strings, options);
+    expect(matchList).toHaveBeenCalledTimes(1);
+    expect(matchList).toHaveBeenLastCalledWith('fuz', strings, options);
+    expect(matchString).toHaveBeenCalledTimes(0);
+  });
+
   test('should call nothing', () => {
     match('fuz', null);
     match('fuz', '');
