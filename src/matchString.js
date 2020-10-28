@@ -17,7 +17,7 @@ export function matchString(what, where, options) {
     withRanges
   } = defaultOptions(options);
   const preparedWhat = caseInsensitive ? String(what).toLocaleLowerCase() : String(what);
-  const preparedWhere = String(where);
+  const preparedWhere = caseInsensitive ? String(where).toLocaleLowerCase() : String(where);
   if (!preparedWhat || !preparedWhere || preparedWhat.length > preparedWhere.length) return null;
 
   let wrapped = null;
@@ -61,7 +61,7 @@ export function matchString(what, where, options) {
   let pos = -1;
 
   for (let i = 0; i < preparedWhat.length; i++) {
-    const nextPos = getIndexOf(preparedWhere, preparedWhat[i], pos + 1, caseInsensitive);
+    const nextPos = getIndexOf(preparedWhere, preparedWhat[i], pos + 1);
     if (nextPos < 0 || nextPos >= preparedWhere.length) return null;
     wordAction(pos, nextPos);
     pos = nextPos;
