@@ -1,4 +1,4 @@
-import { defaultOptions, isFunction, getIndexOf } from './utils';
+import { defaultOptions, isFunction } from './utils';
 
 function computeScore(begin, end, fullLength, wordNumber) {
   const wordLen = end - begin + 1;
@@ -61,7 +61,7 @@ export function matchString(what, where, options) {
   let pos = -1;
 
   for (let i = 0; i < preparedWhat.length; i++) {
-    const nextPos = getIndexOf(preparedWhere, preparedWhat[i], pos + 1);
+    const nextPos = preparedWhere.indexOf(preparedWhat[i], pos + 1);
     if (nextPos < 0 || nextPos >= preparedWhere.length) return null;
     wordAction(pos, nextPos);
     pos = nextPos;

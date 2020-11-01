@@ -1,7 +1,3 @@
-export function getIndexOf(str, substr, from) {
-  return str.indexOf(substr, from);
-}
-
 const DEFAULT_OPTIONS = {
   caseInsensitive: true,
   withScore: true,
