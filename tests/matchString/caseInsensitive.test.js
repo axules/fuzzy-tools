@@ -2,6 +2,8 @@ import { matchString } from '../../src';
 
 const testData = [
   ['fUz', ['fuz--', '--fuz', 'f--uz', 'fu--z', '-fuz-', 'f-u-z', 'xxfxxx-xxxuxxx-xxzxxxzzzz fu zzz']],
+  ['fuzzy', ['Fuzzy fuz', 'Fuzzy fuz', 'fUzzy', 'FUZZY']],
+  ['wOrD', ['word', 'WORD', 'it is WORd', 'What could I READ in weekend?']],
   [
     'vu80U581Q',
     [
@@ -12,7 +14,7 @@ const testData = [
   ]
 ];
 
-describe('matchString(..., { caseInsensitive: false }) = true', () => {
+describe('matchString(..., { caseInsensitive }) = true', () => {
   describe.each(testData)('%#. %s', (what, whereList) => {
     test.each(whereList)('%#. %s', (where) => {
       expect(!!matchString(what, where, { caseInsensitive: true })).toBe(true);
@@ -20,9 +22,3 @@ describe('matchString(..., { caseInsensitive: false }) = true', () => {
     });
   });
 });
-
-describe('matchString(..., { caseInsensitive: true})', () => {
-  it('should match on the first case-insensitive matching character', () => {
-    expect(!!matchString("fuzzy", "Fuzzy fuz", { caseInsensitive: true })).toBe(true)
-  })
-})
