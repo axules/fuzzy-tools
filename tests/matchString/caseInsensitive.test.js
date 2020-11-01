@@ -20,3 +20,9 @@ describe('matchString(..., { caseInsensitive: false }) = true', () => {
     });
   });
 });
+
+describe('matchString(..., { caseInsensitive: true})', () => {
+  it('should match on the first case-insensitive matching character', () => {
+    expect(!!matchString("fuzzy", "Fuzzy fuz", { caseInsensitive: true })).toBe(true)
+  })
+})

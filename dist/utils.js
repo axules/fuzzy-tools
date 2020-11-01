@@ -9,9 +9,8 @@ exports.isString = isString;
 exports.getValue = getValue;
 exports.getDataExtractor = getDataExtractor;
 
-function getIndexOf(str, substr, from, caseInsensitive) {
-  var index = str.indexOf(substr, from);
-  return index < 0 && caseInsensitive ? str.indexOf(substr.toLocaleUpperCase(), from) : index;
+function getIndexOf(str, substr, from) {
+  return str.indexOf(substr, from);
 }
 
 var DEFAULT_OPTIONS = {

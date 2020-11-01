@@ -23,7 +23,7 @@ function matchString(what, where, options) {
       withRanges = _defaultOptions.withRanges;
 
   var preparedWhat = caseInsensitive ? String(what).toLocaleLowerCase() : String(what);
-  var preparedWhere = String(where);
+  var preparedWhere = caseInsensitive ? String(where).toLocaleLowerCase() : String(where);
   if (!preparedWhat || !preparedWhere || preparedWhat.length > preparedWhere.length) return null;
   var wrapped = null;
   var ranges = null;
@@ -68,7 +68,7 @@ function matchString(what, where, options) {
   var pos = -1;
 
   for (var i = 0; i < preparedWhat.length; i++) {
-    var nextPos = (0, _utils.getIndexOf)(preparedWhere, preparedWhat[i], pos + 1, caseInsensitive);
+    var nextPos = (0, _utils.getIndexOf)(preparedWhere, preparedWhat[i], pos + 1);
     if (nextPos < 0 || nextPos >= preparedWhere.length) return null;
     wordAction(pos, nextPos);
     pos = nextPos;

@@ -1,8 +1,5 @@
-export function getIndexOf(str, substr, from, caseInsensitive) {
-  const index = str.indexOf(substr, from);
-  return index < 0 && caseInsensitive
-    ? str.indexOf(substr.toLocaleUpperCase(), from)
-    : index;
+export function getIndexOf(str, substr, from) {
+  return str.indexOf(substr, from);
 }
 
 const DEFAULT_OPTIONS = {
