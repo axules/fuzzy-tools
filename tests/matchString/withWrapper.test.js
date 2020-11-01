@@ -2,7 +2,8 @@ import { matchString } from '../../src';
 
 const testData = [
   ['fuz', 'fuzzy', '<{?}>', '<fuz>zy'],
-  ['fuz', 'fuzzy fuzzy', '<{?}>', '<fuz>zy fuzzy'],
+  ['fuz', 'FuZZy', '<{?}>', '<FuZ>Zy'],
+  ['fuz', 'fuzzy FUZ', '<{?}>', '<fuz>zy FUZ'],
   ['fuz', '-f-u-z-z-y-', '<{?}>', '-<f>-<u>-<z>-z-y-'],
   ['fuz', '-f-u-z-z-y-fuzzy', '<{?}>', '-<f>-<u>-<z>-z-y-fuzzy'],
   ['fuz', '--fuzzy', '[{?}]', '--[fuz]zy'],
