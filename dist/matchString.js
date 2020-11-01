@@ -23,8 +23,10 @@ function matchString(what, where, options) {
       withRanges = _defaultOptions.withRanges;
 
   var preparedWhat = caseInsensitive ? String(what).toLocaleLowerCase() : String(what);
-  var preparedWhere = caseInsensitive ? String(where).toLocaleLowerCase() : String(where);
-  if (!preparedWhat || !preparedWhere || preparedWhat.length > preparedWhere.length) return null;
+  var originalWhere = String(where);
+  if (!preparedWhat || !originalWhere || preparedWhat.length > originalWhere.length) return null; // preparedWhere will be undefined if caseInsensitive is false, it is needed to save memory
+
+  var preparedWhere = caseInsensitive ? originalWhere.toLocaleLowerCase() : undefined;
   var wrapped = null;
   var ranges = null;
   var chunkBegin = 0;
@@ -36,7 +38,7 @@ function matchString(what, where, options) {
   var wordAction = function wordAction(prev, next) {
     if (prev < 0) {
       if (withWrapper) {
-        wrapped = next > 0 ? preparedWhere.slice(0, next) : '';
+        wrapped = next > 0 ? originalWhere.slice(0, next) : '';
       }
 
       if (withRanges) {
@@ -46,14 +48,14 @@ function matchString(what, where, options) {
       chunkBegin = next;
     } else if (next - prev > 1) {
       if (withWrapper) {
-        var chunk = preparedWhere.slice(chunkBegin, prev + 1);
-        wrapped += wrapperFunc(chunk) + preparedWhere.slice(prev + 1, next);
+        var chunk = originalWhere.slice(chunkBegin, prev + 1);
+        wrapped += wrapperFunc(chunk) + originalWhere.slice(prev + 1, next);
       }
 
       if (withRanges) {
         ranges.push({
           begin: chunkBegin,
-          end: Math.min(prev, preparedWhere.length - 1)
+          end: Math.min(prev, originalWhere.length - 1)
         });
       }
 
@@ -68,13 +70,13 @@ function matchString(what, where, options) {
   var pos = -1;
 
   for (var i = 0; i < preparedWhat.length; i++) {
-    var nextPos = preparedWhere.indexOf(preparedWhat[i], pos + 1);
-    if (nextPos < 0 || nextPos >= preparedWhere.length) return null;
+    var nextPos = (preparedWhere || originalWhere).indexOf(preparedWhat.charAt(i), pos + 1);
+    if (nextPos < 0 || nextPos >= originalWhere.length) return null;
     wordAction(pos, nextPos);
     pos = nextPos;
   }
 
-  wordAction(pos, pos + preparedWhere.length);
+  wordAction(pos, pos + originalWhere.length);
   return Object.assign({
     score: withScore ? scoreList.reduce(function (p, c) {
       return p + c;
