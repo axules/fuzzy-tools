@@ -1,18 +1,12 @@
 "use strict";
 
 exports.__esModule = true;
-exports.getIndexOf = getIndexOf;
 exports.defaultOptions = defaultOptions;
 exports.isFunction = isFunction;
 exports.isObject = isObject;
 exports.isString = isString;
 exports.getValue = getValue;
 exports.getDataExtractor = getDataExtractor;
-
-function getIndexOf(str, substr, from) {
-  return str.indexOf(substr, from);
-}
-
 var DEFAULT_OPTIONS = {
   caseInsensitive: true,
   withScore: true,

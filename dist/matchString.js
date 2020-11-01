@@ -68,7 +68,7 @@ function matchString(what, where, options) {
   var pos = -1;
 
   for (var i = 0; i < preparedWhat.length; i++) {
-    var nextPos = (0, _utils.getIndexOf)(preparedWhere, preparedWhat[i], pos + 1);
+    var nextPos = preparedWhere.indexOf(preparedWhat[i], pos + 1);
     if (nextPos < 0 || nextPos >= preparedWhere.length) return null;
     wordAction(pos, nextPos);
     pos = nextPos;
