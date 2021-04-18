@@ -2,7 +2,15 @@ import { defaultOptions, isString, isObject } from './utils';
 import { matchString } from './matchString';
 
 function isValidRate(rate) {
-  return rate === null || (rate > 0 && rate <= 1);
+  const result = rate == null || (rate > 0 && rate <= 1);
+  if (!result) {
+    console.warn(
+      'fuzzy-tools',
+      'rate should be `> 0` and `<= 1`, another value will be ignored. Current value: ',
+      rate
+    );
+  }
+  return result;
 }
 
 export function matchList(what, whereList, options) {
@@ -16,26 +24,22 @@ export function matchList(what, whereList, options) {
   }
 
   const isArray = Array.isArray(whereList);
-  const { withScore } = defaultOptions(options);
+  const { withScore, rates } = defaultOptions(options);
   const results = Object.entries(whereList).reduce((R, [key, el]) => {
+    const realKey = isArray ? Number(key) : key;
     const elValue = !el || isString(el) ? el : el.value;
-    let elRate = isObject(el) && Object.prototype.hasOwnProperty.call(el, 'rate') ? el.rate : null;
-    if (!isValidRate(elRate)) {
-      console.warn(
-        'fuzzy-tools',
-        'rate should be `> 0` and `<= 1`, another value will be ignored. Current value: ',
-        elRate
-      );
-      elRate = null;
-    }
+    const elRate = el && isObject(el) && Object.prototype.hasOwnProperty.call(el, 'rate') && isValidRate(el.rate)
+      ? el.rate
+      : (rates && rates[realKey] != null && isValidRate(rates[realKey]) ? rates[realKey] : null);
+
     const result = matchString(what, elValue, options);
     if (result) {
-      R[key] = Object.assign(
+      R[realKey] = Object.assign(
         result,
-        { original: elValue, index: isArray ? Number(key) : key },
-        elRate === null
+        { original: elValue, index: realKey },
+        elRate == null
           ? {}
-          : { score: result.score / el.rate, rate: elRate }
+          : { score: result.score / elRate, rate: elRate }
       );
     }
     return R;

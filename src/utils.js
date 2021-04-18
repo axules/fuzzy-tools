@@ -3,7 +3,8 @@ const DEFAULT_OPTIONS = {
   withScore: true,
   withWrapper: null,
   withRanges: false,
-  itemWrapper: null
+  itemWrapper: null,
+  rates: {},
 };
 
 export function defaultOptions(options) {
