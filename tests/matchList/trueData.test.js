@@ -3,6 +3,7 @@ import { matchList } from '../../src';
 const testData = [
   ['fuz', ['fuz--', '--fuz', 'f--uz', 'fu--z', '-fuz-', 'f-u-z', 'xxfxxx-xxxuxxx-xxzxxxzzzz fu zzz']],
   ['fuzzz', ['fu--', '---u----', '-z-', 'f----', '----fuz----zz']],
+  ['fuzzz', ['', null, undefined, '----fuz----zz']],
   [
     'vu80u581q',
     [

@@ -15,7 +15,7 @@ const testData = [
   [{}, ['fuz--']],
   [[], ['fuz--']],
   [new Date(), ['fuz--']],
-  ['zzz', ['', null, 123, {}, [], new Date()]],
+  ['zzz', ['', null, 123, {}, [], new Date(), undefined, 11.3, NaN]],
 ];
 
 describe('matchString(...) = true', () => {

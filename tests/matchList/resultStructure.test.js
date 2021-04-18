@@ -62,6 +62,65 @@ describe('matchList(...)', () => {
     });
   });
 
+  test('should return result for mixed array', () => {
+    const result = matchList(
+      'fzz',
+      [{ value: 'fuzza', rate: 0.75 }, 'fuzzy']
+    );
+    expect(result).toEqual({
+      score: 1.778111111111111,
+      matches: {
+        0: { score: 2.3708148148148145, original: 'fuzza', rate: 0.75, index: 0 },
+        1: { score: 1.778111111111111, original: 'fuzzy', index: 1 }
+      }
+    });
+  });
+
+  test('should return result for array with rates as a separate list', () => {
+    const result = matchList(
+      'fzz',
+      ['fuzza', 'fuzzy'],
+      { rates: [0.75, 0.10] }
+    );
+    expect(result).toEqual({
+      score: 2.3708148148148145,
+      matches: {
+        0: { score: 2.3708148148148145, original: 'fuzza', rate: 0.75, index: 0 },
+        1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 }
+      }
+    });
+  });
+
+  test('should return result for array with rates as a separate object', () => {
+    const result = matchList(
+      'fzz',
+      ['fuzza', 'fuzzy'],
+      { rates: { 1: 0.10 } }
+    );
+    expect(result).toEqual({
+      score: 1.778111111111111,
+      matches: {
+        0: { score: 1.778111111111111, original: 'fuzza', index: 0 },
+        1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 }
+      }
+    });
+  });
+
+  test('should return result for array with rates as a separate object with string key', () => {
+    const result = matchList(
+      'fzz',
+      ['fuzza', 'fuzzy'],
+      { rates: { '1': 0.10 } }
+    );
+    expect(result).toEqual({
+      score: 1.778111111111111,
+      matches: {
+        0: { score: 1.778111111111111, original: 'fuzza', index: 0 },
+        1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 }
+      }
+    });
+  });
+
   test('should return result for object', () => {
     const result = matchList(
       'fzz',
@@ -72,6 +131,36 @@ describe('matchList(...)', () => {
       matches: {
         v1: { score: 2.3708148148148145, original: 'fuzza', rate: 0.75, index: 'v1' },
         v2: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 'v2' }
+      }
+    });
+  });
+
+  test('should return result for combined object', () => {
+    const result = matchList(
+      'fzz',
+      { v1: 'fuzza', v2: { value: 'fuzzy', rate: 0.10 } }
+    );
+    expect(result).toEqual({
+      score: 1.778111111111111,
+      matches: {
+        v1: { score: 1.778111111111111, original: 'fuzza', index: 'v1' },
+        v2: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 'v2' }
+      }
+    });
+  });
+
+  test('should return result for object with separate rates', () => {
+    const result = matchList(
+      'fzz',
+      { v1: 'fuzza', v2: 'fuzzy', v3: 'fazza' },
+      { rates: { v2: 0.10 } },
+    );
+    expect(result).toEqual({
+      score: 1.778111111111111,
+      matches: {
+        v1: { score: 1.778111111111111, original: 'fuzza', index: 'v1' },
+        v2: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 'v2' },
+        v3: { score: 1.778111111111111, original: 'fazza', index: 'v3' },
       }
     });
   });
