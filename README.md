@@ -78,6 +78,25 @@ npm install --save fuzzy-tools
         - *String*: template string, (e.g. `'<b>{?}</b>'`, `{?}` will be replaced by matched word. `fzz` in `fuzzy` => `'<b>f</b>u<b>zz</b>y'`.
         - *Function(word: String): String*, (e.g. `(word) => '<b>'+word+'</b>'`)
     - `withRanges`: Boolean (default: false) - when it is true, then result will contains `ranges`. It is array of Object({ begin: Number, end: Number }) with ranges of matched parts.
+    - `rates`: or(Array, Object) of rates (> 0 and <= 1).
+    ```js
+      match('fuz',
+        ['fuzzy', 'it is fuzzy'],
+        { rates: [0.75, 0.25] }
+      )
+      // or
+      match('fuz',
+        ['fuzzy', 'it is fuzzy'],
+        { rates: { 0: 0.75, 1: 0.25 } }
+      )
+      // the same that
+      match('fuz',
+        {
+          v1: { value: 'fuzzy', rate: 0.75 },
+          v2: { value: 'it is fuzzy', rate: 0.25 }
+        }
+      )
+    ```
 
 ### **Result**
 
@@ -107,8 +126,8 @@ match('fzz', 'fuzzy'); // { score: 1.74 }
 match('fzz', ['fu', 'fuzza']) // { score: 1.74, matches: {1:{score: 1.74}} }
 
 match('fzz', [{ value: 'fuzza', rate: 0.75 }, { value: 'fuzzy', rate: 0.10 }])
-// { score: 1,479, matches: {0: {score: 1,305}, 1: {score: 0,174}} }
-// score = (1.74 * 0.75 + 1.74 * 0.10) / 2
+// { score: 2.32, matches: {0: {score: 2.32}, 1: {score: 17.4}} }
+// score = Min(1.74 / 0.75, 1.74 / 0.10)
 
 match('fzz', 'fuzzy', { withScore: false }); // { score: 1 }
 
@@ -184,7 +203,29 @@ match('fzz', [{ value: 'fuzza', rate: 0.75 }, { value: 'fuzzy', rate: 0.10 }])
 // }
 // score = min(2.3708148148148145, 17.78111111111111)
 
-match('fzz', {v1: { value: 'fuzza', rate: 0.75 }, v2: { value: 'fuzzy', rate: 0.10 }})
+// the same but more compact
+match('fzz', ['fuzza', 'fuzzy'], { rates: [0.75, 0.10] })
+// {
+//   score: 2.3708148148148145,
+//   matches: {
+//     0: { score: 2.3708148148148145, original: 'fuzza', rate: 0.75, index: 0 },
+//     1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 }
+//   }
+// }
+// score = min(2.3708148148148145, 17.78111111111111)
+
+match('fzz', {v1: { value: 'fuzza', rate: 0.75 }, v2: { value: 'fuzzy', rate: 0.10 } })
+// {
+//   score: 2.3708148148148145,
+//   matches: {
+//     v1: { score: 2.3708148148148145, original: 'fuzza', rate: 0.75, index: 'v1' },
+//     v2: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 'v2' }
+//   }
+// }
+// score = min(2.3708148148148145, 17.78111111111111)
+
+// the same but more compact
+match('fzz', { v1: 'fuzza', v2: 'fuzzy' }, { rates: { v1: 0.75, v2: 0.10 } })
 // {
 //   score: 2.3708148148148145,
 //   matches: {
@@ -294,6 +335,7 @@ filter('fZZ', data, {
 #### **Compare next libraries**
 
 * fuzzy-tools (this)
+* fast-fuzzy (https://www.npmjs.com/package/fast-fuzzy)
 * fuzzy (https://www.npmjs.com/package/fuzzy)
 * fuzzyjs (https://www.npmjs.com/package/fuzzyjs)
 * fuzzy.js (https://www.npmjs.com/package/fuzzy.js)
@@ -301,13 +343,17 @@ filter('fZZ', data, {
 * fuzzy-search (https://www.npmjs.com/package/fuzzy-search)
 
 #### **Methodology**
-1. generate pairs mask (random length) and string (5000 chars length). 5000 pairs.
+1. generate pairs mask (random length) and string (255 or 5000 chars length). 5000 pairs.
 2. call match function from each library
 3. compare results
 
 #### **Results**
 
-![fuzzy-tools vs others](./assets/benchmark-comparison.png)
+It is more real case - 5000 items with 255 length string
+![fuzzy-tools vs others in real case](./assets/benchmark-comparison-5000-255.png)
+
+It is test case - 5000 items with 5000 length string. And it is not mistake, it is real results.
+![fuzzy-tools vs others](./assets/benchmark-comparison-5000-5000.png)
 
 #### **Benchmark project**
 
