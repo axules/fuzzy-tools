@@ -2,11 +2,11 @@
 
 exports.__esModule = true;
 exports.defaultOptions = defaultOptions;
+exports.getDataExtractor = getDataExtractor;
+exports.getValue = getValue;
 exports.isFunction = isFunction;
 exports.isObject = isObject;
 exports.isString = isString;
-exports.getValue = getValue;
-exports.getDataExtractor = getDataExtractor;
 var DEFAULT_OPTIONS = {
   caseInsensitive: true,
   withScore: true,

@@ -4,7 +4,7 @@
   "presets": [
     ["@babel/preset-env", {
       "useBuiltIns": "entry",
-      "corejs": 3,
+      "corejs": "3.19",
       "loose": true,
       "forceAllTransforms": false,
       "targets": "ie 11, defaults, not dead"
