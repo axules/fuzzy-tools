@@ -14,11 +14,11 @@ const testData = [
   ]
 ];
 
-describe('matchString(..., { caseInsensitive }) = true', () => {
+describe('matchString(..., { caseSensitive }) = true', () => {
   describe.each(testData)('%#. %s', (what, whereList) => {
     test.each(whereList)('%#. %s', (where) => {
-      expect(!!matchString(what, where, { caseInsensitive: true })).toBe(true);
-      expect(!!matchString(what, where, { caseInsensitive: false })).toBe(false);
+      expect(!!matchString(what, where)).toBe(true);
+      expect(!!matchString(what, where, { caseSensitive: true })).toBe(false);
     });
   });
 });

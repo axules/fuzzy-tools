@@ -19,10 +19,10 @@ describe('filter', () => {
       .toEqual(['<fuz>', '<f>a<uz>2']);
   });
 
-  test('should return filtered string list with extract and caseInsensitive=false', () => {
+  test('should return filtered string list with extract and caseSensitive=true', () => {
     const items = ['fuz', 'string', 'fuz2'];
-    expect(filter('FUZ', items, { caseInsensitive: false })).toEqual([]);
-    expect(filter('FUZ', items, { caseInsensitive: false, extract: item => item.toUpperCase() }))
+    expect(filter('FUZ', items, { caseSensitive: true })).toEqual([]);
+    expect(filter('FUZ', items, { caseSensitive: true, extract: item => item.toUpperCase() }))
       .toEqual(['fuz', 'fuz2']);
   });
 

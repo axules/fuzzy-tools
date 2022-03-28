@@ -17,16 +17,16 @@ function matchString(what, where, options) {
   if (!what || !where) return null;
 
   var _defaultOptions = (0, _utils.defaultOptions)(options),
-      caseInsensitive = _defaultOptions.caseInsensitive,
+      caseSensitive = _defaultOptions.caseSensitive,
       withScore = _defaultOptions.withScore,
       withWrapper = _defaultOptions.withWrapper,
       withRanges = _defaultOptions.withRanges;
 
-  var preparedWhat = caseInsensitive ? String(what).toLocaleLowerCase() : String(what);
+  var preparedWhat = caseSensitive ? String(what) : String(what).toLocaleLowerCase();
   var originalWhere = String(where);
-  if (!preparedWhat || !originalWhere || preparedWhat.length > originalWhere.length) return null; // preparedWhere will be undefined if caseInsensitive is false, it is needed to save memory
+  if (!preparedWhat || !originalWhere || preparedWhat.length > originalWhere.length) return null; // preparedWhere will be undefined if caseSensitive is true, it is needed to save memory
 
-  var preparedWhere = caseInsensitive ? originalWhere.toLocaleLowerCase() : undefined;
+  var preparedWhere = caseSensitive ? undefined : originalWhere.toLocaleLowerCase();
   var wrapped = null;
   var ranges = null;
   var chunkBegin = 0;

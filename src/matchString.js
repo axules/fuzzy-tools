@@ -11,16 +11,16 @@ function computeScore(begin, end, fullLength, wordNumber) {
 export function matchString(what, where, options) {
   if (!what || !where) return null;
   const {
-    caseInsensitive,
+    caseSensitive,
     withScore,
     withWrapper,
     withRanges
   } = defaultOptions(options);
-  const preparedWhat = caseInsensitive ? String(what).toLocaleLowerCase() : String(what);
+  const preparedWhat = caseSensitive ? String(what) : String(what).toLocaleLowerCase();
   const originalWhere = String(where);
   if (!preparedWhat || !originalWhere || preparedWhat.length > originalWhere.length) return null;
-  // preparedWhere will be undefined if caseInsensitive is false, it is needed to save memory
-  const preparedWhere = caseInsensitive ? originalWhere.toLocaleLowerCase() : undefined;
+  // preparedWhere will be undefined if caseSensitive is true, it is needed to save memory
+  const preparedWhere = caseSensitive ? undefined : originalWhere.toLocaleLowerCase();
 
   let wrapped = null;
   let ranges = null;

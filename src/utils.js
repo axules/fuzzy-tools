@@ -1,5 +1,5 @@
 const DEFAULT_OPTIONS = {
-  caseInsensitive: true,
+  caseSensitive: false,
   withScore: true,
   withWrapper: null,
   withRanges: false,
@@ -8,6 +8,9 @@ const DEFAULT_OPTIONS = {
 };
 
 export function defaultOptions(options) {
+  if (options && Object.prototype.hasOwnProperty.call(options, 'caseInsensitive')) {
+    console.warn('fuzzy-tools: `caseInsensitive` is deprecated, use `caseSensitive` instead of `caseInsensitive`');
+  }
   return options ? { ...DEFAULT_OPTIONS, ...options } : DEFAULT_OPTIONS;
 }
 
