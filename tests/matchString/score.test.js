@@ -10,7 +10,7 @@ const equalScoreData = [
 
 describe('Score test', () => {
   test.each(equalScoreData)('%#. %s with score %d, the same in %j', (what, score, where) => {
-    const scoreList = where.map(el => matchString(what, el).score);
+    const scoreList = where.map(el => matchString(what, el, { withScore: true }).score);
     expect(scoreList).toEqual(Array(where.length).fill(score));
   });
 });

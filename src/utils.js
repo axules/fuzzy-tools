@@ -1,6 +1,6 @@
 const DEFAULT_OPTIONS = {
   caseSensitive: false,
-  withScore: true,
+  withScore: false,
   withWrapper: null,
   withRanges: false,
   itemWrapper: null,

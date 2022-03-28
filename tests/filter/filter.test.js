@@ -44,7 +44,11 @@ describe('filter', () => {
 
   test('should return filtered list, extract is array', () => {
     const items = [{ v: '---f-u-z' }, { v: 'string', v2: 'ffuuzz' }, { v: 'fuz' }, { v: 'f-uz--', v2: 'ffffffuzzzzz' }];
-    const result = filter('fuZ', items, { extract: ['v', 'v2'], itemWrapper: (el, r) => ({ ...el, decision: r }) });
+    const result = filter(
+      'fuZ',
+      items,
+      { extract: ['v', 'v2'], itemWrapper: (el, r) => ({ ...el, decision: r }), withScore: true }
+    );
     expect(result)
       .toEqual([
         { v: '---f-u-z', decision: {
@@ -144,12 +148,22 @@ describe('filter', () => {
 
   test('should return filtered object list with object extract', () => {
     const items = [{ v1: '---f-u-z' }, { v1: 'string' }, { v2: 'fuZ' }];
-    expect(filter('fUz', items, { extract: { v1: 0.5, v2: 1 } })).toEqual([{ v1: '---f-u-z' }, { v2: 'fuZ' }]);
+    expect(filter('fUz', items, { extract: { v1: 0.5, v2: 1 } }))
+      .toEqual([{ v1: '---f-u-z' }, { v2: 'fuZ' }]);
   });
 
   test('should return filtered and wrapped list', () => {
     const items = [{ v1: '---f-u-z' }, { v1: 'string' }, { v2: 'fuZ' }];
-    expect(filter('fUz', items, { extract: { v1: 0.75, v2: 1 }, itemWrapper: (el, match) => ({ v: el.v1 || el.v2, score: match.score }) }))
+    const result = filter(
+      'fUz',
+      items,
+      {
+        extract: { v1: 0.75, v2: 1 },
+        itemWrapper: (el, match) => ({ v: el.v1 || el.v2, score: match.score }),
+        withScore: true
+      }
+    );
+    expect(result)
       .toEqual([{ v: '---f-u-z', score: 9.48148148148148 }, { v: 'fuZ', score: 0.001 }]);
   });
 });

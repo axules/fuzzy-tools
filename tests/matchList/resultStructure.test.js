@@ -17,31 +17,31 @@ const testData = [
 
 describe('matchList(...)', () => {
   test.each(testData)('%#. %s with %d matches', (what, matchCount, whereList) => {
-    const result = matchList(what, whereList);
+    const result = matchList(what, whereList, { withScore: true });
     expect(Object.values(result.matches).length).toBe(matchCount);
     expect(result.score >= 0 && result.score !== 1).toBe(true);
   });
 
   test.each(testData)('%#. %s without matches (withScore = false)', (what, matchCount, whereList) => {
-    const result = matchList(what, whereList, { withScore: false });
+    const result = matchList(what, whereList);
     expect(Object.values(result.matches).length).toBe(matchCount);
     expect(result.score === 1).toBe(true);
   });
 
   test.each(testData)('%#. %s with %d matches (withRanges = true)', (what, matchCount, whereList) => {
-    const result = matchList(what, whereList, { withScore: false, withRanges: true });
+    const result = matchList(what, whereList, { withRanges: true });
     expect(Object.values(result.matches).length).toBe(matchCount);
     expect(result.score === 1).toBe(true);
   });
 
   test.each(testData)('%#. %s with %d matches (withWrapper = <{?}>)', (what, matchCount, whereList) => {
-    const result = matchList(what, whereList, { withScore: false, withWrapper: '<{?}>' });
+    const result = matchList(what, whereList, { withWrapper: '<{?}>' });
     expect(Object.values(result.matches).length).toBe(matchCount);
     expect(result.score === 1).toBe(true);
   });
 
   test('should contain index and original', () => {
-    const result = matchList('fuzzz', ['fu--', '---u----', '-z-', 'f----', '----fuz----zz']);
+    const result = matchList('fuzzz', ['fu--', '---u----', '-z-', 'f----', '----fuz----zz'], { withScore: true });
     expect(Object.values(result.matches).length).toBe(1);
     expect(Object.keys(result.matches)).toEqual(['4']);
     expect(Object.values(result.matches)).toEqual([{ score: 7.680000000000001, original: '----fuz----zz', index: 4 }]);
@@ -51,7 +51,8 @@ describe('matchList(...)', () => {
   test('should return result for array', () => {
     const result = matchList(
       'fzz',
-      [{ value: 'fuzza', rate: 0.75 }, { value: 'fuzzy', rate: 0.10 }]
+      [{ value: 'fuzza', rate: 0.75 }, { value: 'fuzzy', rate: 0.10 }],
+      { withScore: true }
     );
     expect(result).toEqual({
       score: 2.3708148148148145,
@@ -65,7 +66,8 @@ describe('matchList(...)', () => {
   test('should return result for mixed array', () => {
     const result = matchList(
       'fzz',
-      [{ value: 'fuzza', rate: 0.75 }, 'fuzzy']
+      [{ value: 'fuzza', rate: 0.75 }, 'fuzzy'],
+      { withScore: true }
     );
     expect(result).toEqual({
       score: 1.778111111111111,
@@ -80,7 +82,7 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fzz',
       ['fuzza', 'fuzzy'],
-      { rates: [0.75, 0.10] }
+      { rates: [0.75, 0.10], withScore: true }
     );
     expect(result).toEqual({
       score: 2.3708148148148145,
@@ -95,7 +97,7 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fzz',
       ['fuzza', 'fuzzy'],
-      { rates: { 1: 0.10 } }
+      { rates: { 1: 0.10 }, withScore: true }
     );
     expect(result).toEqual({
       score: 1.778111111111111,
@@ -110,7 +112,7 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fzz',
       ['fuzza', 'fuzzy'],
-      { rates: { '1': 0.10 } }
+      { rates: { '1': 0.10 }, withScore: true }
     );
     expect(result).toEqual({
       score: 1.778111111111111,
@@ -124,7 +126,8 @@ describe('matchList(...)', () => {
   test('should return result for object', () => {
     const result = matchList(
       'fzz',
-      { v1: { value: 'fuzza', rate: 0.75 }, v2: { value: 'fuzzy', rate: 0.10 } }
+      { v1: { value: 'fuzza', rate: 0.75 }, v2: { value: 'fuzzy', rate: 0.10 } },
+      { withScore: true }
     );
     expect(result).toEqual({
       score: 2.3708148148148145,
@@ -138,7 +141,8 @@ describe('matchList(...)', () => {
   test('should return result for combined object', () => {
     const result = matchList(
       'fzz',
-      { v1: 'fuzza', v2: { value: 'fuzzy', rate: 0.10 } }
+      { v1: 'fuzza', v2: { value: 'fuzzy', rate: 0.10 } },
+      { withScore: true }
     );
     expect(result).toEqual({
       score: 1.778111111111111,
@@ -153,7 +157,7 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fzz',
       { v1: 'fuzza', v2: 'fuzzy', v3: 'fazza' },
-      { rates: { v2: 0.10 } },
+      { rates: { v2: 0.10 }, withScore: true },
     );
     expect(result).toEqual({
       score: 1.778111111111111,
@@ -166,16 +170,20 @@ describe('matchList(...)', () => {
   });
 
   test('should contain score as a min value of scores', () => {
-    const result = matchList('fuzzz', ['fu--zz.z', '---u----', '-z-', 'f----', '----fuz----zz']);
+    const result = matchList('fuzzz', ['fu--zz.z', '---u----', '-z-', 'f----', '----fuz----zz'], { withScore: true });
     expect(Object.values(result.matches).length).toBe(2);
     expect(Object.keys(result.matches)).toEqual(['0', '4']);
-    expect(result.matches[0]).toEqual({ 'index': 0, 'original': 'fu--zz.z', 'score': 3.8804 });
-    expect(result.matches[4]).toEqual({ 'index': 4, 'original': '----fuz----zz', 'score': 7.680000000000001 });
+    expect(result.matches[0]).toEqual({ index: 0, original: 'fu--zz.z', score: 3.8804 });
+    expect(result.matches[4]).toEqual({ index: 4, original: '----fuz----zz', score: 7.680000000000001 });
     expect(result.score).toBe(3.8804);
   });
 
   test('should contain score as a min value of scores with rates', () => {
-    const result = matchList('fuzzz', [{ value: 'fu--zz.z', rate: 0.5 }, '---u----', '-z-', 'f----', '----fuz----zz']);
+    const result = matchList(
+      'fuzzz',
+      [{ value: 'fu--zz.z', rate: 0.5 }, '---u----', '-z-', 'f----', '----fuz----zz'],
+      { withScore: true }
+    );
     expect(Object.values(result.matches).length).toBe(2);
     expect(Object.keys(result.matches)).toEqual(['0', '4']);
     expect(result.matches[0]).toEqual({ index: 0, original: 'fu--zz.z', rate: 0.5, score: 7.7608 });
@@ -184,7 +192,7 @@ describe('matchList(...)', () => {
   });
 
   test('should ignore wrong rate', () => {
-    const result = matchList('fuzzz', [{ value: 'fu--zz.z', rate: 999 }, '---u----', '-z-', 'f----', '----fuz----zz']);
+    const result = matchList('fuzzz', [{ value: 'fu--zz.z', rate: 999 }, '---u----', '-z-', 'f----', '----fuz----zz'], { withScore: true });
     expect(Object.values(result.matches).length).toBe(2);
     expect(Object.keys(result.matches)).toEqual(['0', '4']);
     expect(result.matches[0]).toEqual({ index: 0, original: 'fu--zz.z', score: 3.8804 });
@@ -193,7 +201,11 @@ describe('matchList(...)', () => {
   });
 
   test('should contain score as a min value of scores with rates for object', () => {
-    const result = matchList('fuzzz', { v1: { value: 'fu--zz.z', rate: 0.5 }, v2: '---u----', v3: '-z-', v4: 'f----', v5: '----fuz----zz' });
+    const result = matchList(
+      'fuzzz',
+      { v1: { value: 'fu--zz.z', rate: 0.5 }, v2: '---u----', v3: '-z-', v4: 'f----', v5: '----fuz----zz' },
+      { withScore: true }
+    );
     expect(Object.values(result.matches).length).toBe(2);
     expect(Object.keys(result.matches)).toEqual(['v1', 'v5']);
     expect(result.matches.v1).toEqual({ index: 'v1', original: 'fu--zz.z', rate: 0.5, score: 7.7608 });

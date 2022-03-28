@@ -9,7 +9,7 @@ exports.isObject = isObject;
 exports.isString = isString;
 var DEFAULT_OPTIONS = {
   caseSensitive: false,
-  withScore: true,
+  withScore: false,
   withWrapper: null,
   withRanges: false,
   itemWrapper: null,
