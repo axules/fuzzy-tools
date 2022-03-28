@@ -1,15 +1,17 @@
 {
-    "parser": "babel-eslint",
+    "parser": "@babel/eslint-parser",
     "env": {
         "browser": true,
         "jest":true
     },
     "extends": [
-        "eslint:recommended"
+        "eslint:recommended",
+        "plugin:import/recommended"
     ],
     "plugins": [
-       "babel"
+        "import"
     ],
+    "ignorePatterns": ["/dist/**"],
     "rules": {
         "keyword-spacing": ["warn"],
         "key-spacing": ["warn"],

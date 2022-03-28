@@ -1,6 +1,6 @@
 {
   "name": "fuzzy-tools",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "author": {
     "name": "Shelest Denis",
     "email": "axules@gmail.com"
@@ -36,30 +36,19 @@
     "build": "npm test && babel -d dist ./src/**/**",
     "prepack": "npm run build"
   },
-  "jest": {
-    "runner": "jest-runner-eslint",
-    "displayName": "lint",
-    "testMatch": [
-      "<rootDir>/src/**/*.test.js"
-    ]
-  },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.16.0",
-    "@babel/node": "^7.16.0",
-    "@babel/preset-env": "^7.16.0",
-    "@babel/runtime-corejs3": "^7.16.0",
-    "babel-eslint": "^10.0.3",
-    "babel-jest": "^27.3.1",
-    "babel-loader": "^8.2.3",
-    "core-js": "^3.19.1",
-    "eslint": "^8.2.0",
-    "eslint-loader": "^3.0.3",
-    "eslint-plugin-babel": "^5.3.1",
-    "eslint-plugin-flowtype": "^8.0.3",
-    "eslint-plugin-import": "^2.25.2",
-    "jest": "^27.3.1",
-    "jest-runner-eslint": "^1.0.0"
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.8",
+    "@babel/eslint-parser": "^7.17.0",
+    "@babel/node": "^7.16.8",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/runtime-corejs3": "^7.17.8",
+    "babel-jest": "^27.5.1",
+    "babel-loader": "^8.2.4",
+    "core-js": "^3.21.1",
+    "eslint": "^8.12.0",
+    "eslint-plugin-import": "^2.25.4",
+    "jest": "^27.5.1"
   },
   "files": [
     "dist",
