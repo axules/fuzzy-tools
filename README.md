@@ -3,14 +3,15 @@
 1. [What is it?](#what-is-it)
 2. [Live example](https://codesandbox.io/s/fuzzytoolsexample-4r2ej)
 3. [Installation](#installation)
-4. [Match function](#match-function)
+4. [What is new?](#what-is-new)
+5. [Match function](#match-function)
     - [Match in string](#match-in-string)
     - [Match in list of strings](#match-in-list-of-strings)
-5. [Filter function](#filter-function)
+6. [Filter function](#filter-function)
     - [Filter strings list](#filter-strings-list)
     - [Filter objects list](#filter-objects-list)
-6. [Benchmark results](#benchmark-results)
-7. [Tests](./tests)
+7. [Benchmark results](#benchmark-results)
+8. [Tests](./tests)
 
 
 ## What is it?
@@ -26,6 +27,11 @@ https://codesandbox.io/s/fuzzytoolsexample-4r2ej
 ```
 npm install --save fuzzy-tools
 ```
+
+## What is new?
+v.1.3.0
+  - `caseInsensitive` replaced by `caseSensitive` (use `caseSensitive: true` instead of `caseInsensitive: false`)
+  - `withScore` is `false` by default (use `withScore: true` if you need to have score in matching result)
 
 ## Match function
 
@@ -72,9 +78,10 @@ npm install --save fuzzy-tools
       )
     ```
 - `options`
-    - `caseInsensitive`: Boolean (default: true) - when it is true, then `FZZ` will be matched with `fuzzy`. Charcase will be ignored.
-    - `withScore`: Boolean (default: true) - when it is true, then `score` will be computed for matched strings, else `score` will be 1.
-    - `withWrapper`: String or Function (default: false) - when it is true, then result will contains `wrapped`. It is needed to render hightlited results.
+    - `caseInsensitive` is deprecated since v.1.3.0
+    - `caseSensitive`: Boolean (default: false) - when it is true, then `FZZ` will not be matched with `fuzzy`. Char's case will be ignored.
+    - `withScore`: Boolean (default: false) - when it is true, then `score` will be computed for matched strings, else `score` will be 1.
+    - `withWrapper`: String or Function (default: false) - when it is true, then result will contains `wrapped`. It is needed to render highlighted results.
         - *String*: template string, (e.g. `'<b>{?}</b>'`, `{?}` will be replaced by matched word. `fzz` in `fuzzy` => `'<b>f</b>u<b>zz</b>y'`.
         - *Function(word: String): String*, (e.g. `(word) => '<b>'+word+'</b>'`)
     - `withRanges`: Boolean (default: false) - when it is true, then result will contains `ranges`. It is array of Object({ begin: Number, end: Number }) with ranges of matched parts.
@@ -100,7 +107,7 @@ npm install --save fuzzy-tools
 
 ### **Result**
 
-- `score` - from `0.001` to `infinity`, less is better. If `withScore` is false then `score` is `1`.
+- `score` - from `0.001` to `infinity`, less is better. If `withScore` is false then `score` is `1` always.
 
 - `matches` - It will be if `where` is *Array* or *Object*. It is object with results, *key* is index or key, value is *Object*
 ```js
@@ -121,38 +128,38 @@ npm install --save fuzzy-tools
 ```javascript
 import { match } from 'fuzzy-tools';
 
-match('fzz', 'fuzzy'); // { score: 1.74 }
+match('fzz', 'fuzzy', { withScore: true }); // { score: 1.74 }
 
-match('fzz', ['fu', 'fuzza']) // { score: 1.74, matches: {1:{score: 1.74}} }
+match('fzz', ['fu', 'fuzza'], { withScore: true }) // { score: 1.74, matches: {1:{score: 1.74}} }
 
-match('fzz', [{ value: 'fuzza', rate: 0.75 }, { value: 'fuzzy', rate: 0.10 }])
+match('fzz', [{ value: 'fuzza', rate: 0.75 }, { value: 'fuzzy', rate: 0.10 }], { withScore: true })
 // { score: 2.32, matches: {0: {score: 2.32}, 1: {score: 17.4}} }
 // score = Min(1.74 / 0.75, 1.74 / 0.10)
 
-match('fzz', 'fuzzy', { withScore: false }); // { score: 1 }
+match('fzz', 'fuzzy'); // { score: 1 }
 
-match('fZZ', 'fuzzy', { caseInsensitive: false }); // null
+match('fZZ', 'fuzzy', { caseSensitive: true }); // null
 
 match('fZZ', 'fuzzy', { withWrapper: '<i>{?}</i>' });
-// { score: 1.74, wrapped: '<i>f</i>u<i>zz</i>y' }
+// { score: 1, wrapped: '<i>f</i>u<i>zz</i>y' }
 
 match('fZZ', ['fuzzy'], { withWrapper: '<i>{?}</i>' });
-// { score: 1.74, matches: {0: {score: 1.74, original: 'fuzzy', index: 0, wrapped: '<i>f</i>u<i>zz</i>y', original: 'fuzzy'}}}
+// { score: 1, matches: {0: {score: 1, original: 'fuzzy', index: 0, wrapped: '<i>f</i>u<i>zz</i>y', original: 'fuzzy'}}}
 
 match('fZZ', { v: 'fuzzy' }, { withWrapper: '<i>{?}</i>' });
-// { score: 1.74, matches: { v: {score: 1.74, original: 'fuzzy', index: 'v', wrapped: '<i>f</i>u<i>zz</i>y', original: 'fuzzy'}}}
+// { score: 1, matches: { v: {score: 1, original: 'fuzzy', index: 'v', wrapped: '<i>f</i>u<i>zz</i>y', original: 'fuzzy'}}}
 
 match('fZZ', 'fuzzy', { withWrapper: w => `<b>${w}</b>` });
-// { score: 1.74, wrapped: '<b>f</b>u<b>zz</b>y' }
+// { score: 1, wrapped: '<b>f</b>u<b>zz</b>y' }
 
-match('fZZ', ['fuzzy'], { withWrapper: w => `<b>${w}</b>` });
-// { score: 1.74, matches: {0: {score: 1.74, wrapped: '<b>f</b>u<b>zz</b>y', original: 'fuzzy'}}}
+match('fZZ', ['fuzzy'], { withWrapper: w => `<b>${w}</b>`, withScore: true });
+// { score: 1, matches: {0: {score: 1, wrapped: '<b>f</b>u<b>zz</b>y', original: 'fuzzy'}}}
 
 match('fZZ', 'fuzzy', { withRanges: true });
-// { score: 1.74, ranges: [{begin: 0, end: 0}, {begin: 2, end: 3}]}
+// { score: 1, ranges: [{begin: 0, end: 0}, {begin: 2, end: 3}]}
 
 match('fZZ', ['fuzzy'], { withRanges: true });
-// { score: 1.74, matches: {0: {score: 1.74, ranges: [{begin: 0, end: 0}, {begin: 2, end: 3}], original: 'fuzzy'}}}
+// { score: 1, matches: {0: {score: 1, ranges: [{begin: 0, end: 0}, {begin: 2, end: 3}], original: 'fuzzy'}}}
 ```
 
 ### Match in string
@@ -162,20 +169,20 @@ import { match } from 'fuzzy-tools';
 // or
 // import { matchString } from 'fuzzy-tools';
 
-match('fzz', 'fuzzy'); // { score: 1.74 }
+match('fzz', 'fuzzy', { withScore: true }); // { score: 1.74 }
 
-match('fzz', 'fuzzy', { withScore: false }); // { score: 1 }
+match('fzz', 'fuzzy'); // { score: 1 }
 
-match('fZZ', 'fuzzy', { caseInsensitive: false }); // null
+match('fZZ', 'fuzzy', { caseSensitive: true }); // null
 
-match('fZZ', 'fuzzy', { withWrapper: '<i>{?}</i>' });
+match('fZZ', 'fuzzy', { withWrapper: '<i>{?}</i>', withScore: true });
 // { score: 1.74, wrapped: '<i>f</i>u<i>zz</i>y' }
 
 match('fZZ', 'fuzzy', { withWrapper: w => `<b>${w}</b>` });
-// { score: 1.74, wrapped: '<b>f</b>u<b>zz</b>y' }
+// { score: 1, wrapped: '<b>f</b>u<b>zz</b>y' }
 
 match('fZZ', 'fuzzy', { withRanges: true });
-// { score: 1.74, ranges: [{begin: 0, end: 0}, {begin: 2, end: 3}]}
+// { score: 1, ranges: [{begin: 0, end: 0}, {begin: 2, end: 3}]}
 ```
 
 ### Match in list of strings
@@ -184,16 +191,13 @@ import { match } from 'fuzzy-tools';
 // or
 // import { matchList } from 'fuzzy-tools';
 
-match('fzz', ['fu', 'fuzza'])
+match('fzz', ['fu', 'fuzza'], { withScore: true })
 // { score: 1.74, matches: {1: {score: 1.74, original: 'fuzza', index: 1}} }
 
 match('fzz', { v1: 'fu', v2: 'fuzza' })
-// { score: 1.74, matches: {v2: {score: 1.74, original: 'fuzza', index: 'v2'}} }
+// { score: 1, matches: {v2: {score: 1, original: 'fuzza', index: 'v2'}} }
 
-match('fzz', ['fu', 'fuzza'], { withScore: false });
-// { score: 1, matches: {1:{score: 1, original: 'fuzza', index: 1}} }
-
-match('fzz', [{ value: 'fuzza', rate: 0.75 }, { value: 'fuzzy', rate: 0.10 }])
+match('fzz', [{ value: 'fuzza', rate: 0.75 }, { value: 'fuzzy', rate: 0.10 }], { withScore: true })
 // {
 //   score: 2.3708148148148145,
 //   matches: {
@@ -204,7 +208,7 @@ match('fzz', [{ value: 'fuzza', rate: 0.75 }, { value: 'fuzzy', rate: 0.10 }])
 // score = min(2.3708148148148145, 17.78111111111111)
 
 // the same but more compact
-match('fzz', ['fuzza', 'fuzzy'], { rates: [0.75, 0.10] })
+match('fzz', ['fuzza', 'fuzzy'], { rates: [0.75, 0.10], withScore: true })
 // {
 //   score: 2.3708148148148145,
 //   matches: {
@@ -214,7 +218,7 @@ match('fzz', ['fuzza', 'fuzzy'], { rates: [0.75, 0.10] })
 // }
 // score = min(2.3708148148148145, 17.78111111111111)
 
-match('fzz', {v1: { value: 'fuzza', rate: 0.75 }, v2: { value: 'fuzzy', rate: 0.10 } })
+match('fzz', {v1: { value: 'fuzza', rate: 0.75 }, v2: { value: 'fuzzy', rate: 0.10 } }, { withScore: true })
 // {
 //   score: 2.3708148148148145,
 //   matches: {
@@ -225,7 +229,7 @@ match('fzz', {v1: { value: 'fuzza', rate: 0.75 }, v2: { value: 'fuzzy', rate: 0.
 // score = min(2.3708148148148145, 17.78111111111111)
 
 // the same but more compact
-match('fzz', { v1: 'fuzza', v2: 'fuzzy' }, { rates: { v1: 0.75, v2: 0.10 } })
+match('fzz', { v1: 'fuzza', v2: 'fuzzy' }, { rates: { v1: 0.75, v2: 0.10 }, withScore: true })
 // {
 //   score: 2.3708148148148145,
 //   matches: {
@@ -235,13 +239,13 @@ match('fzz', { v1: 'fuzza', v2: 'fuzzy' }, { rates: { v1: 0.75, v2: 0.10 } })
 // }
 // score = min(2.3708148148148145, 17.78111111111111)
 
-match('fZZ', ['fuzzy'], { caseInsensitive: false });
+match('fZZ', ['fuzzy'], { caseSensitive: true });
 // null
 
 match('fZZ', ['fuzzy'], { withWrapper: '<i>{?}</i>' });
-// { score: 1.74, matches: {0: {score: 1.74, index: 0, wrapped: '<i>f</i>u<i>zz</i>y', original: 'fuzzy'}}}
+// { score: 1, matches: {0: {score: 1, index: 0, wrapped: '<i>f</i>u<i>zz</i>y', original: 'fuzzy'}}}
 
-match('fZZ', ['fuzzy'], { withWrapper: w => `<b>${w}</b>` });
+match('fZZ', ['fuzzy'], { withWrapper: w => `<b>${w}</b>`, withScore: true });
 // { score: 1.74, matches: {0: {score: 1.74, index: 0, wrapped: '<b>f</b>u<b>zz</b>y', original: 'fuzzy'}}}
 
 match('fZZ', ['fuzzy'], { withRanges: true });
@@ -272,9 +276,9 @@ match('fZZ', ['fuzzy'], { withRanges: true });
         - *Object: { fieldName: rateNumber }* - field name is key, rate is value.
         - *Function(item):String or Array* - function takes item and should return *String*, *Array of Strings*, *Object of Strings* or *Array of Object({ value: String, rate: Number })*
     - `itemWrapper`: *function(item, matchResult, { index: Number, result: Array }): any* - function takes item and matchResult and should return value that will be pushed into result list. *If it returns empty value (false, null, undefined, '', 0), then it will not be pushed into result.*
-    - `caseInsensitive`: Boolean (default: true) - when it is true, then `FZZ` will be matched with `fuzzy`. Charcase will be ignored.
-    - `withScore`: Boolean (default: true) - when it is true, then `score` will be computed for matched strings, else `score` will be 1.
-    - `withWrapper`: String or Function (default: false) - when it is true, then match result for each item will contain `wrapped`. It is needed to render hightlited results.
+    - `caseSensitive`: Boolean (default: false) - when it is true, then `FZZ` will not be matched with `fuzzy`. If it is false then char's case will be ignored.
+    - `withScore`: Boolean (default: false) - when it is true, then `score` will be computed for matched strings, else `score` will be 1.
+    - `withWrapper`: String or Function (default: false) - when it is true, then match result for each item will contain `wrapped`. It is needed to render highlighted results.
         - **String**: template string, (e.g. `'<b>{?}</b>'`, `{?}` will be replaced by matched word. `fzz` in `fuzzy` => `'<b>f</b>u<b>zz</b>y'`.
         - **Function(word: String): String**, (e.g. `(word) => '<b>'+word+'</b>'`)
     - `withRanges`: Boolean (default: false) - when it is true, then match result for each item will contain `ranges`. It is array of Object({ begin: Number, end: Number }) with ranges of matched parts.
@@ -296,10 +300,10 @@ filter('fZZ', data, { withWrapper: '<{?}>', itemWrapper: (item, match) => match.
 filter('fZZ', data, { extract: (item) => item.slice(0, 4) });
 // ['fuzzy', 'fazzy'];
 
-filter('FZZ', data, { caseInsensitive: false });
+filter('FZZ', data, { caseSensitive: true });
 // [];
 
-filter('FZZ', data, { caseInsensitive: false, extract: item => item.toUpperCase() });
+filter('FZZ', data, { caseSensitive: true, extract: item => item.toUpperCase() });
 // ['fuzzy', 'fazzy', 'fuuuuuzzer'];
 ```
 
