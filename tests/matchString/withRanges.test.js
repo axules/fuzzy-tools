@@ -12,7 +12,9 @@ const testData = [
 
 describe('matchString(..., { withRanges: true }) = true', () => {
   test.each(testData)('%#. %s in %s => %j', (what, where, expected) => {
-    expect(matchString(what, where, { withRanges: true }).ranges)
-      .toEqual(expected);
+    const result = matchString(what, where, { withRanges: true }).ranges;
+    expect(result).toEqual(expected);
+    const allChunks = result.map(({ begin, end }) => where.slice(begin, end + 1)).join('');
+    expect(allChunks).toBe(what);
   });
 });

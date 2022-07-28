@@ -19,10 +19,6 @@ describe('matchString(..., { caseSensitive }) = true', () => {
     test.each(whereList)('%#. %s', (where) => {
       expect(!!matchString(what, where)).toBe(true);
       expect(!!matchString(what, where, { caseSensitive: true })).toBe(false);
-      expect(!!matchString(what, where, { caseSensitive: true, caseInsensitive: true })).toBe(false);
-
-      expect(!!matchString(what, where, { caseInsensitive: false })).toBe(false);
-      expect(!!matchString(what, where, { caseInsensitive: true })).toBe(true);
     });
   });
 });
