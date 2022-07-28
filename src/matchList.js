@@ -14,16 +14,16 @@ function isValidRate(rate) {
 }
 
 export function matchList(what, whereList, options) {
+  const isArray = Array.isArray(whereList);
   if (
     !what ||
     !whereList ||
-    (!Array.isArray(whereList) && !isObject(whereList)) ||
+    (!isArray && !isObject(whereList)) ||
     whereList.length == 0
   ) {
     return null;
   }
 
-  const isArray = Array.isArray(whereList);
   const { withScore, rates } = defaultOptions(options);
   const results = Object.entries(whereList).reduce((R, [key, el]) => {
     const realKey = isArray ? Number(key) : key;
