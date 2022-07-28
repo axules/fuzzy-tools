@@ -29,10 +29,12 @@ npm install --save fuzzy-tools
 ```
 
 ## What is new?
+
 v.2.0.0
-  - `caseInsensitive` removed (use `caseSensitive: true` instead of `caseInsensitive: false`)
-  - `mask` not only `String`, but `Array.of(String)`. In case when it is array then search will be work as fuzzy but not by chars, but by words.
-    `['fuz', 'sea']` will not be found in `fuuuuzzzzzy seeeeearch`, but will be found in `fuzzzzzy search`.
+
+- `caseInsensitive` removed (use `caseSensitive: true` instead of `caseInsensitive: false`)
+- `mask` not only `String`, but `Array.of(String)`. In case when it is array then search will be work as fuzzy but not by chars, but by words.
+  `['fuz', 'sea']` will not be found in `fuuuuzzzzzy seeeeearch`, but will be found in `fuzzzzzy search`.
 
 ## Match function
 
@@ -45,6 +47,7 @@ v.2.0.0
 #### [Tests cases for matchString](./tests/matchString)
 
 ### **Arguments**
+
 | args | type | default | note |
 | - | - | - | - |
 | mask | string or array.of(string) | no | provide what you want to find ('fzz' or ['fuz', 'sea']) |
@@ -203,6 +206,7 @@ match('fZZ', 'fuzzy', { withRanges: true });
 ```
 
 ### Match in list of strings
+
 ```javascript
 import { match } from 'fuzzy-tools';
 // or
@@ -270,6 +274,7 @@ match('fZZ', ['fuzzy'], { withRanges: true });
 ```
 
 ## Filter function
+
 `filter(mask: OR(String, Array.of(String)), items: Array, options: Object): Array` - returns list of matched items.
 
 #### [Tests cases](./tests/filter)
@@ -301,6 +306,7 @@ match('fZZ', ['fuzzy'], { withRanges: true });
     - `withRanges`: Boolean (default: false) - when it is true, then match result for each item will contain `ranges`. It is array of Object({ begin: Number, end: Number }) with ranges of matched parts.
 
 ### Filter strings list
+
 ```javascript
 import { filter } from 'fuzzy-tools';
 
@@ -325,6 +331,7 @@ filter('FZZ', data, { caseSensitive: true, extract: item => item.toUpperCase() }
 ```
 
 ### Filter objects list
+
 ```javascript
 import { filter } from 'fuzzy-tools';
 
@@ -364,6 +371,7 @@ filter('fZZ', data, {
 * fuzzy-search (https://www.npmjs.com/package/fuzzy-search)
 
 #### **Methodology**
+
 1. generate pairs mask (random length) and string (255 or 5000 chars length). 5000 pairs.
 2. call match function from each library
 3. compare results
@@ -371,9 +379,11 @@ filter('fZZ', data, {
 #### **Results**
 
 It is more real case - 5000 items with 255 length string
+
 ![fuzzy-tools vs others in real case](./assets/benchmark-comparison-5000-255.png)
 
 It is test case - 5000 items with 2000 length string. And it is not mistake, it is real results.
+
 ![fuzzy-tools vs others](./assets/benchmark-comparison-5000-2000.png)
 
 #### **Benchmark project**
