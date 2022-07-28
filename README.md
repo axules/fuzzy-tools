@@ -373,8 +373,8 @@ filter('fZZ', data, {
 It is more real case - 5000 items with 255 length string
 ![fuzzy-tools vs others in real case](./assets/benchmark-comparison-5000-255.png)
 
-It is test case - 5000 items with 5000 length string. And it is not mistake, it is real results.
-![fuzzy-tools vs others](./assets/benchmark-comparison-5000-5000.png)
+It is test case - 5000 items with 2000 length string. And it is not mistake, it is real results.
+![fuzzy-tools vs others](./assets/benchmark-comparison-5000-2000.png)
 
 #### **Benchmark project**
 
