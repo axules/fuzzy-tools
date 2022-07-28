@@ -22,9 +22,17 @@ function matchString(what, where, options) {
       withWrapper = _defaultOptions.withWrapper,
       withRanges = _defaultOptions.withRanges;
 
-  var preparedWhat = caseSensitive ? String(what) : String(what).toLocaleLowerCase();
+  var isWords = Array.isArray(what);
+  if (isWords && what.length == 0) return null;
+  var preparedWhat = caseSensitive ? isWords ? what : String(what) : isWords ? what.map(function (it) {
+    return String(it).toLocaleLowerCase();
+  }) : String(what).toLocaleLowerCase();
   var originalWhere = String(where);
-  if (!preparedWhat || !originalWhere || preparedWhat.length > originalWhere.length) return null; // preparedWhere will be undefined if caseSensitive is true, it is needed to save memory
+
+  if (!preparedWhat || !originalWhere || !isWords && preparedWhat.length > originalWhere.length) {
+    return null;
+  } // preparedWhere will be undefined if caseSensitive is true, it is needed to save memory
+
 
   var preparedWhere = caseSensitive ? undefined : originalWhere.toLocaleLowerCase();
   var wrapped = null;
@@ -70,8 +78,16 @@ function matchString(what, where, options) {
   var pos = -1;
 
   for (var i = 0; i < preparedWhat.length; i++) {
-    var nextPos = (preparedWhere || originalWhere).indexOf(preparedWhat.charAt(i), pos + 1);
-    if (nextPos < 0 || nextPos >= originalWhere.length) return null;
+    var chunk = isWords ? preparedWhat[i] : preparedWhat.charAt(i);
+    var nextPos = (preparedWhere || originalWhere).indexOf(chunk, pos + 1);
+    if (nextPos < 0) return null;
+
+    if (isWords && chunk.length > 1) {
+      wordAction(pos, nextPos);
+      nextPos = nextPos + chunk.length - 1;
+      pos = nextPos - 1;
+    }
+
     wordAction(pos, nextPos);
     pos = nextPos;
   }

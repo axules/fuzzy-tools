@@ -18,11 +18,11 @@ function isValidRate(rate) {
 }
 
 function matchList(what, whereList, options) {
-  if (!what || !whereList || !Array.isArray(whereList) && !(0, _utils.isObject)(whereList) || whereList.length == 0) {
+  var isArray = Array.isArray(whereList);
+
+  if (!what || !whereList || !isArray && !(0, _utils.isObject)(whereList) || whereList.length == 0) {
     return null;
   }
-
-  var isArray = Array.isArray(whereList);
 
   var _defaultOptions = (0, _utils.defaultOptions)(options),
       withScore = _defaultOptions.withScore,
