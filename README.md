@@ -29,9 +29,10 @@ npm install --save fuzzy-tools
 ```
 
 ## What is new?
-v.1.3.0
-  - `caseInsensitive` replaced by `caseSensitive` (use `caseSensitive: true` instead of `caseInsensitive: false`)
-  - `withScore` is `false` by default (use `withScore: true` if you need to have score in matching result)
+v.2.0.0
+  - `caseInsensitive` removed (use `caseSensitive: true` instead of `caseInsensitive: false`)
+  - `mask` not only `String`, but `Array.of(String)`. In case when it is array then search will be work as fuzzy but not by chars, but by words.
+    `['fuz', 'sea']` will not be found in `fuuuuzzzzzy seeeeearch`, but will be found in `fuzzzzzy search`.
 
 ## Match function
 
@@ -46,39 +47,55 @@ v.1.3.0
 ### **Arguments**
 | args | type | default | note |
 | - | - | - | - |
-| mask | string | no | string what you want to find (fzz) |
+| mask | string or array.of(string) | no | provide what you want to find ('fzz' or ['fuz', 'sea']) |
 | where | string or array | no | destination string or array of strings |
 | options | object | {...} | additional options |
 |  |  |  |  |
 
-- `mask` - String
+- `mask`
+    - *String*: 'fzz' will be found in 'fuzzy search'
+    - *Array.of(String)*:
+
+      ['fzz'] will NOT be found in 'fuzzy search'.
+
+      ['fuz', 'sea'] will be found in 'fuzzy search'.
+
+      ['fuz', 'seaa'] will NOT be found in 'fuzzy search', because ALL words should be in `where`.
+
+      ```js
+        match('fzz', 'fuzzy search'); // { score: 1 }
+        match(['fzz'], 'fuzzy search'); // null
+        match(['fuz', 'rch'], 'fuzzy search'); // { score: 1 }
+        match(['fuz', 'rch1111'], 'fuzzy search'); // null
+      ```
 - `where`
     - *String*: result contains `score` is score of matching.
-    ```js
-      match('fuz', 'fuzzy');
-    ```
+      ```js
+        match('fuz', 'fuzzy'); // { score: 1 }
+      ```
     - *Array of strings* or *Object({ key: String, key2: String })*: result contains `score` is min of scores of each string (score = min(match(mask, item[0]), match(mask, item[1]), ...)).
-    ```js
-      match('fuz', ['fuzzy', 'it is fuzzy']);
-      match('fuz', { v1: 'fuzzy', v2: 'it is fuzzy' });
-    ```
+      ```js
+        match('fuz', ['fuzzy', 'it is fuzzy']);
+        // { score: 1, matches: { 0: { score: 1 }, 1: { score: 1 } } }
+        match('fuz', { v1: 'fuzzy', v2: 'it is fuzzy' });
+        // { score: 1, matches: { v1: { score: 1 }, v2: { score: 1 } } }
+      ```
     - *Array of Object({ value: String, rate: Number(>0 and <=1) })*: result contains `score` is min of score of each value * rate (score = min(match(mask, item[0].value) / item[0].rate, ...))
-    ```js
-      match('fuz',
-        [
-          { value: 'fuzzy', rate: 0.75 },
-          { value: 'it is fuzzy', rate: 0.25 }
-        ]
-      );
-      match('fuz',
-        {
-          v1: { value: 'fuzzy', rate: 0.75 },
-          v2: { value: 'it is fuzzy', rate: 0.25 }
-        }
-      )
-    ```
+      ```js
+        match('fuz',
+          [
+            { value: 'fuzzy', rate: 0.75 },
+            { value: 'it is fuzzy', rate: 0.25 }
+          ]
+        );
+        match('fuz',
+          {
+            v1: { value: 'fuzzy', rate: 0.75 },
+            v2: { value: 'it is fuzzy', rate: 0.25 }
+          }
+        )
+      ```
 - `options`
-    - `caseInsensitive` is deprecated since v.1.3.0
     - `caseSensitive`: Boolean (default: false) - when it is true, then `FZZ` will not be matched with `fuzzy`. Char's case will be ignored.
     - `withScore`: Boolean (default: false) - when it is true, then `score` will be computed for matched strings, else `score` will be 1.
     - `withWrapper`: String or Function (default: false) - when it is true, then result will contains `wrapped`. It is needed to render highlighted results.
@@ -86,40 +103,40 @@ v.1.3.0
         - *Function(word: String): String*, (e.g. `(word) => '<b>'+word+'</b>'`)
     - `withRanges`: Boolean (default: false) - when it is true, then result will contains `ranges`. It is array of Object({ begin: Number, end: Number }) with ranges of matched parts.
     - `rates`: or(Array, Object) of rates (> 0 and <= 1).
-    ```js
-      match('fuz',
-        ['fuzzy', 'it is fuzzy'],
-        { rates: [0.75, 0.25] }
-      )
-      // or
-      match('fuz',
-        ['fuzzy', 'it is fuzzy'],
-        { rates: { 0: 0.75, 1: 0.25 } }
-      )
-      // the same that
-      match('fuz',
-        {
-          v1: { value: 'fuzzy', rate: 0.75 },
-          v2: { value: 'it is fuzzy', rate: 0.25 }
-        }
-      )
-    ```
+      ```js
+        match('fuz',
+          ['fuzzy', 'it is fuzzy'],
+          { rates: [0.75, 0.25] }
+        )
+        // or
+        match('fuz',
+          ['fuzzy', 'it is fuzzy'],
+          { rates: { 0: 0.75, 1: 0.25 } }
+        )
+        // the same that
+        match('fuz',
+          {
+            v1: { value: 'fuzzy', rate: 0.75 },
+            v2: { value: 'it is fuzzy', rate: 0.25 }
+          }
+        )
+      ```
 
 ### **Result**
 
 - `score` - from `0.001` to `infinity`, less is better. If `withScore` is false then `score` is `1` always.
 
 - `matches` - It will be if `where` is *Array* or *Object*. It is object with results, *key* is index or key, value is *Object*
-```js
-    {
-      score: Number,
-      original: String,
-      index: or(Number, String),
-      [wrapped: String],
-      [ranges: Array]
-    }
+  ```js
+      {
+        score: Number,
+        original: String,
+        index: or(Number, String),
+        [wrapped: String],
+        [ranges: Array]
+      }
 
-```
+  ```
 
 - `wrapped` - contains wrapped original string or result of `withWrapper` function. It is undefined if `withWrapper` is false.
 
@@ -253,19 +270,19 @@ match('fZZ', ['fuzzy'], { withRanges: true });
 ```
 
 ## Filter function
-`filter(mask: String, items: Array, options: Object): Array` - returns list of matched items.
+`filter(mask: OR(String, Array.of(String)), items: Array, options: Object): Array` - returns list of matched items.
 
 #### [Tests cases](./tests/filter)
 
 ### **Arguments**
 | args | type | default | note |
 | - | - | - | - |
-| mask | string | no | string what you want to find (fzz) |
+| mask | string or array.of(string) | no | what you want to find (fzz) |
 | items | array | no | items list |
 | options | object | {...} | additional options |
 |  |  |  |  |
 
-- `mask` - String
+- `mask` - read more in [Match function](#match-function)
 - `where`
     - Array of Strings
     - Array of Objects

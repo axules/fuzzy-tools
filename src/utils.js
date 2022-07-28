@@ -8,14 +8,7 @@ const DEFAULT_OPTIONS = {
 };
 
 export function defaultOptions(options) {
-  const deprecationOverride = {};
-  if (options && Object.prototype.hasOwnProperty.call(options, 'caseInsensitive')) {
-    console.warn('fuzzy-tools: `caseInsensitive` is deprecated, use `caseSensitive` instead of `caseInsensitive`');
-    if (!Object.prototype.hasOwnProperty.call(options, 'caseSensitive')) {
-      deprecationOverride.caseSensitive = !options.caseInsensitive;
-    }
-  }
-  return options ? { ...DEFAULT_OPTIONS, ...options, ...deprecationOverride } : DEFAULT_OPTIONS;
+  return options ? { ...DEFAULT_OPTIONS, ...options } : DEFAULT_OPTIONS;
 }
 
 export function isFunction(value) {
