@@ -1,4 +1,4 @@
-import {
+import all, {
   match,
   matchString,
   matchList,
@@ -16,5 +16,16 @@ describe('index.js', () => {
   it.each(testData)('should export `%s` function', (name, fn, args) => {
     expect(typeof fn).toBe('function');
     expect(match.length).toBe(args);
+  });
+
+  it('default export contains 4 functions', () => {
+    // eslint-disable-next-line import/no-named-as-default-member
+    expect(all.match).toBe(match);
+    // eslint-disable-next-line import/no-named-as-default-member
+    expect(all.matchString).toBe(matchString);
+    // eslint-disable-next-line import/no-named-as-default-member
+    expect(all.matchList).toBe(matchList);
+    // eslint-disable-next-line import/no-named-as-default-member
+    expect(all.filter).toBe(filter);
   });
 });
