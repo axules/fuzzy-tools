@@ -20,7 +20,7 @@ function matchString(what, where, options) {
   var isWords = Array.isArray(what);
   if (isWords && what.length == 0) return null;
   var preparedWhat = caseSensitive ? isWords ? what : String(what) : isWords ? what.map(function (it) {
-    return String(it).toLocaleLowerCase();
+    return (0, _utils.isRegExp)(it) ? it : String(it).toLocaleLowerCase();
   }) : String(what).toLocaleLowerCase();
   var originalWhere = String(where);
   if (!preparedWhat || !originalWhere || !isWords && preparedWhat.length > originalWhere.length) {
@@ -64,11 +64,13 @@ function matchString(what, where, options) {
   var pos = -1;
   for (var i = 0; i < preparedWhat.length; i++) {
     var chunk = isWords ? preparedWhat[i] : preparedWhat.charAt(i);
-    var nextPos = (preparedWhere || originalWhere).indexOf(chunk, pos + 1);
+    var _searchIn = (0, _utils.searchIn)(preparedWhere || originalWhere, chunk, pos + 1),
+      nextPos = _searchIn[0],
+      found = _searchIn[1];
     if (nextPos < 0) return null;
-    if (isWords && chunk.length > 1) {
+    if (isWords && found.length > 1) {
       wordAction(pos, nextPos);
-      nextPos = nextPos + chunk.length - 1;
+      nextPos = nextPos + found.length - 1;
       pos = nextPos - 1;
     }
     wordAction(pos, nextPos);

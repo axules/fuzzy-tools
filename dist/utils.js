@@ -1,12 +1,16 @@
 "use strict";
 
 exports.__esModule = true;
+exports.DEFAULT_OPTIONS = void 0;
 exports.defaultOptions = defaultOptions;
 exports.getDataExtractor = getDataExtractor;
+exports.getRegExpWithFrom = getRegExpWithFrom;
 exports.getValue = getValue;
 exports.isFunction = isFunction;
 exports.isObject = isObject;
+exports.isRegExp = isRegExp;
 exports.isString = isString;
+exports.searchIn = searchIn;
 var DEFAULT_OPTIONS = {
   caseSensitive: false,
   withScore: false,
@@ -15,6 +19,7 @@ var DEFAULT_OPTIONS = {
   itemWrapper: null,
   rates: {}
 };
+exports.DEFAULT_OPTIONS = DEFAULT_OPTIONS;
 function defaultOptions(options) {
   return options ? Object.assign({}, DEFAULT_OPTIONS, options) : DEFAULT_OPTIONS;
 }
@@ -22,7 +27,10 @@ function isFunction(value) {
   return typeof value === 'function';
 }
 function isObject(value) {
-  return typeof value === 'object';
+  return !!value && typeof value === 'object';
+}
+function isRegExp(value) {
+  return value instanceof RegExp;
 }
 function isString(value) {
   return typeof value === 'string';
@@ -65,4 +73,28 @@ function getDataExtractor(fields) {
       }), _Object$assign2));
     }, {});
   };
+}
+function getRegExpWithFrom(reg, from) {
+  if (from === void 0) {
+    from = undefined;
+  }
+  return new RegExp("(.{" + (from && from > 0 ? from : 0) + ",}?)(" + reg.source + ")", reg.flags);
+}
+function searchIn(where, what, from) {
+  if (from === void 0) {
+    from = undefined;
+  }
+  var isRegExp = what instanceof RegExp;
+  if (isRegExp) {
+    var regExpWithFrom = getRegExpWithFrom(what, from);
+    var _ref3 = regExpWithFrom.exec(where) || {},
+      _ref3$ = _ref3[1],
+      before = _ref3$ === void 0 ? false : _ref3$,
+      _ref3$2 = _ref3[2],
+      found = _ref3$2 === void 0 ? '' : _ref3$2;
+    if (!found) return [-1, ''];
+    return [before.length, found];
+  }
+  var start = where.indexOf(what, from);
+  return [start, start >= 0 ? what : ''];
 }
