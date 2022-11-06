@@ -1,4 +1,4 @@
-import { defaultOptions, isFunction } from './utils';
+import { defaultOptions, isFunction, searchIn, isRegExp } from './utils';
 
 function computeScore(begin, end, fullLength, wordNumber) {
   const wordLen = end - begin + 1;
@@ -21,7 +21,11 @@ export function matchString(what, where, options) {
 
   const preparedWhat = caseSensitive
     ? (isWords ? what : String(what))
-    : (isWords ? what.map(it => String(it).toLocaleLowerCase()) : String(what).toLocaleLowerCase());
+    : (
+      isWords
+        ? what.map(it => (isRegExp(it) ? it : String(it).toLocaleLowerCase()))
+        : String(what).toLocaleLowerCase()
+    );
   const originalWhere = String(where);
   if (!preparedWhat || !originalWhere || (!isWords && preparedWhat.length > originalWhere.length)) {
     return null;
@@ -70,13 +74,13 @@ export function matchString(what, where, options) {
   let pos = -1;
   for (let i = 0; i < preparedWhat.length; i++) {
     const chunk = isWords ? preparedWhat[i] : preparedWhat.charAt(i);
-    let nextPos = (preparedWhere || originalWhere).indexOf(chunk, pos + 1);
+    let [nextPos, found] = searchIn(preparedWhere || originalWhere, chunk, pos + 1);
 
     if (nextPos < 0) return null;
 
-    if (isWords && chunk.length > 1) {
+    if (isWords && found.length > 1) {
       wordAction(pos, nextPos);
-      nextPos = nextPos + chunk.length - 1;
+      nextPos = nextPos + found.length - 1;
       pos = nextPos - 1;
     }
     wordAction(pos, nextPos);

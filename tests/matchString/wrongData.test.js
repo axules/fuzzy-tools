@@ -11,7 +11,9 @@ const testData = [
     ]
   ],
   ['', ['fuz--']],
-  ['f', [{}, [], new Date(), 123, 19.22, null, undefined]],
+  ['fx', [{}, [], new Date(), 123, 19.22, null, undefined, 'fff']],
+  [['fx'], [{}, [], new Date(), 123, 19.22, null, undefined, 'fff']],
+  [[/fx/], [{}, [], new Date(), 123, 19.22, null, undefined, 'fff']],
   [null, ['fuz--']],
   [{}, ['fuz--']],
   [[], ['fuz--']],
