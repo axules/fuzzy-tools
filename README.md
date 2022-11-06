@@ -30,11 +30,11 @@ npm install --save fuzzy-tools
 
 ## What is new?
 
-v.2.0.0
+v.2.1.0
 
 - `caseInsensitive` removed (use `caseSensitive: true` instead of `caseInsensitive: false`)
-- `mask` not only `String`, but `Array.of(String)`. In case when it is array then search will be work as fuzzy but not by chars, but by words.
-  `['fuz', 'sea']` will not be found in `fuuuuzzzzzy seeeeearch`, but will be found in `fuzzzzzy search`.
+- `mask` not only `String`, but `Array.of(String or RegExp)`. In case when it is array then search will be work as fuzzy but not by chars, but by words.
+  `['fuz', 'sea']` (or `['fuz', /sea/]`) will not be found in `fuuuuzzzzzy seeeeearch`, but will be found in `fuzzzzzy search`.
 
 ## Match function
 
@@ -50,16 +50,20 @@ v.2.0.0
 
 | args | type | default | note |
 | - | - | - | - |
-| mask | string or array.of(string) | no | provide what you want to find ('fzz' or ['fuz', 'sea']) |
-| where | string or array | no | destination string or array of strings |
-| options | object | {...} | additional options |
+| mask | String or Array.of(String or RegExp) | no | provide what you want to find ('fzz' or ['fuz', 'sea']) |
+| where | String or Array.of(String) | no | destination string or array of strings |
+| options | Object | {...} | additional options |
 |  |  |  |  |
 
 - `mask`
     - *String*: 'fzz' will be found in 'fuzzy search'
-    - *Array.of(String)*:
+    - *Array.of(String or RegExp)*:
 
       ['fzz'] will NOT be found in 'fuzzy search'.
+
+      [/fzz/] will NOT be found in 'fuzzy search'.
+
+      [/f/, /./, /zz/] will be found in 'fuzzy search'.
 
       ['fuz', 'sea'] will be found in 'fuzzy search'.
 
@@ -68,6 +72,10 @@ v.2.0.0
       ```js
         match('fzz', 'fuzzy search'); // { score: 1 }
         match(['fzz'], 'fuzzy search'); // null
+        match(['f', 'u', 'zz'], 'fuzzy search'); // { score: 1 }
+        match(['f', /./, 'zz'], 'fuzzy search'); // { score: 1 }
+        match(['f', /[a-z]/, 'zz'], 'fuzzy search'); // { score: 1 }
+        match([/[a-x]{2}/, 'zz'], 'fuzzy search'); // { score: 1 }
         match(['fuz', 'rch'], 'fuzzy search'); // { score: 1 }
         match(['fuz', 'rch1111'], 'fuzzy search'); // null
       ```
