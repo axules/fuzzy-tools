@@ -1,4 +1,16 @@
-import { getValue, getDataExtractor, getRegExpWithFrom, searchIn, isFunction, isObject, isString, defaultOptions, DEFAULT_OPTIONS, isRegExp } from '../src/utils';
+import {
+  getValue,
+  getDataExtractor,
+  getRegExpWithFrom,
+  searchIn,
+  isFunction,
+  isObject,
+  isString,
+  defaultOptions,
+  DEFAULT_OPTIONS,
+  isRegExp,
+} from '../src/utils';
+
 
 describe('getValue', () => {
   const data = [
@@ -18,18 +30,18 @@ describe('getValue', () => {
     [{ a: { b: 10 }, a2: 1 }, 'a', { b: 10 }],
     [{ a: { b: 10 }, a2: 1 }, ['a'], { b: 10 }],
     [{ a: { b: 10 }, a2: 1 }, 'a.b', 10],
-    [{ a: { b: 10 }, a2: 1 }, ['a','b'], 10],
-    [{ a: { b: [1,2,3,4] } }, 'a.b', [1,2,3,4]],
-    [{ a: { b: [1,2,3,4] } }, 'a.b.2', 3],
-    [{ a: { b: [1,2,3,4] } }, 'a.b.88', undefined],
-    [{ a: { b: [1,2,3,{ c: [7,8,9] }] } }, 'a.b.3', { c: [7,8,9] }],
-    [{ a: { b: [1,2,3,{ c: [7,8,9] }] } }, 'a.b.3.c', [7,8,9]],
-    [{ a: { b: [1,2,3,{ c: [7,8,9] }] } }, 'a.b.3.c.2', 9],
-    [{ a: { b: [1,2,3,{ c: [7,8,9] }] } }, 'a.b.3.c.3', undefined],
-    [{ a: { b: [1,2,3,{ c: [7,8,9] }] } }, 'a.b.3.cc.2', undefined],
-    [{ a: { b: [1,2,3,{ c: [7,8,9] }] } }, 'a.bb.3.c.2', undefined],
-    [{ a: { b: [1,2,3,{ c: [7,8,9] }] } }, 'a.b.99.c.2', undefined],
-    [{ a: { b: [1,2,3,{ c: [7,8,9] }] } }, 'aaa.b.3.c.2', undefined],
+    [{ a: { b: 10 }, a2: 1 }, ['a', 'b'], 10],
+    [{ a: { b: [1, 2, 3, 4] } }, 'a.b', [1, 2, 3, 4]],
+    [{ a: { b: [1, 2, 3, 4] } }, 'a.b.2', 3],
+    [{ a: { b: [1, 2, 3, 4] } }, 'a.b.88', undefined],
+    [{ a: { b: [1, 2, 3, { c: [7, 8, 9] }] } }, 'a.b.3', { c: [7, 8, 9] }],
+    [{ a: { b: [1, 2, 3, { c: [7, 8, 9] }] } }, 'a.b.3.c', [7, 8, 9]],
+    [{ a: { b: [1, 2, 3, { c: [7, 8, 9] }] } }, 'a.b.3.c.2', 9],
+    [{ a: { b: [1, 2, 3, { c: [7, 8, 9] }] } }, 'a.b.3.c.3', undefined],
+    [{ a: { b: [1, 2, 3, { c: [7, 8, 9] }] } }, 'a.b.3.cc.2', undefined],
+    [{ a: { b: [1, 2, 3, { c: [7, 8, 9] }] } }, 'a.bb.3.c.2', undefined],
+    [{ a: { b: [1, 2, 3, { c: [7, 8, 9] }] } }, 'a.b.99.c.2', undefined],
+    [{ a: { b: [1, 2, 3, { c: [7, 8, 9] }] } }, 'aaa.b.3.c.2', undefined],
   ];
 
   test.each(data)('%#. getValue(%j, %j) = %j', (obj, key, expected) => {
@@ -198,7 +210,8 @@ describe('getRegExpWithFrom', () => {
     [/[a-z]./ig, 10, /(.{10,}?)([a-z].)/gi],
     [/[a-z]/, 1, /(.{1,}?)([a-z])/],
     // in nodejs /.[a-z]+/dmuyis != new RegExp('.[a-z]+', 'dmuyis')
-    [/[1-9]/dmuyis, 10, new RegExp('(.{10,}?)([1-9])', 'dmyi')],
+    [/[1-9]/dmuyis, 10, new RegExp('(.{10,}?)([1-9])', 'dmuyis')],
+    [/[a-z]/gdmyuis, 22, new RegExp('(.{22,}?)([a-z])', 'gdmyuis')],
     [new RegExp('[a-z1-9]', 'dmuyis'), 0, new RegExp('(.{0,}?)([a-z1-9])', 'dmuyis')],
     [new RegExp('[a-z1-9]', 'gdmuyis'), 10, new RegExp('(.{10,}?)([a-z1-9])', 'gdmuyis')],
     [new RegExp('[a-z1-9]', 'gdmuyis'), null, new RegExp('(.{0,}?)([a-z1-9])', 'gdmuyis')],
@@ -206,11 +219,6 @@ describe('getRegExpWithFrom', () => {
 
   test.each(testCases)('%#. getRegExpWithFrom(%s, %j) = %s', (fields, from, expected) => {
     expect(getRegExpWithFrom(fields, from)).toEqual(expected);
-  });
-
-  test('nodejs returns different regexp', () => {
-    expect(/.[a-z]/gdmyuis)
-      .toEqual(new RegExp('(?:[\\0-\\uD7FF\\uE000-\\uFFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF]|[\\uD800-\\uDBFF](?![\\uDC00-\\uDFFF])|(?:[^\\uD800-\\uDBFF]|^)[\\uDC00-\\uDFFF])[a-z\\u017F\\u212A]', 'gdmyi'));
   });
 });
 

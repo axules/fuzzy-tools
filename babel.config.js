@@ -1,15 +1,11 @@
 module.exports = {
   plugins: [],
   presets: [
-    ["@babel/preset-env", {
-      "useBuiltIns": "entry",
-      "corejs": "3.24",
-      "loose": true,
-      "forceAllTransforms": false,
-      "targets": {
-        "ie": 11
-      }
-    }]
-  ]
+    ['@babel/preset-env', {
+      corejs: { version: '3.49', proposals: false },
+      forceAllTransforms: false,
+      modules: 'commonjs',
+    }],
+  ],
 }
 ;

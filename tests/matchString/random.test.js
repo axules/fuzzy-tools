@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
-import { matchString } from '../../src';
-import { generateTrueCases, generateWrongCases } from '../utils';
+import { matchString } from '../importRouter';
+import {
+  generateTrueCases,
+  generateWrongCases,
+} from '../utils';
+
 
 const COUNT = 3000;
 const LEN = 1000;

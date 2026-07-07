@@ -1,4 +1,5 @@
-import { matchString } from '../../src';
+import { matchString } from '../importRouter';
+
 
 const equalScoreData = [
   ['fuz', 0.001, ['fuz--', 'fuz', 'fuz----']],

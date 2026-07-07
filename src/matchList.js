@@ -1,13 +1,18 @@
-import { defaultOptions, isString, isObject } from './utils';
+import {
+  defaultOptions,
+  isString,
+  isObject,
+} from './utils';
 import { matchString } from './matchString';
 
+
 function isValidRate(rate) {
-  const result = rate == null || (rate > 0 && rate <= 1);
+  const result = !rate || (rate > 0 && rate <= 1);
   if (!result) {
     console.warn(
       'fuzzy-tools',
       'rate should be `> 0` and `<= 1`, another value will be ignored. Current value: ',
-      rate
+      rate,
     );
   }
   return result;
@@ -16,10 +21,10 @@ function isValidRate(rate) {
 export function matchList(what, whereList, options) {
   const isArray = Array.isArray(whereList);
   if (
-    !what ||
-    !whereList ||
-    (!isArray && !isObject(whereList)) ||
-    whereList.length == 0
+    !what
+    || !whereList
+    || (!isArray && !isObject(whereList))
+    || whereList.length <= 0
   ) {
     return null;
   }
@@ -30,16 +35,14 @@ export function matchList(what, whereList, options) {
     const elValue = !el || isString(el) ? el : el.value;
     const elRate = el && isObject(el) && Object.prototype.hasOwnProperty.call(el, 'rate') && isValidRate(el.rate)
       ? el.rate
-      : (rates && rates[realKey] != null && isValidRate(rates[realKey]) ? rates[realKey] : null);
+      : (rates && !!rates[realKey] && isValidRate(rates[realKey]) ? rates[realKey] : null);
 
     const result = matchString(what, elValue, options);
     if (result) {
       R[realKey] = Object.assign(
         result,
         { original: elValue, index: realKey },
-        elRate == null
-          ? {}
-          : { score: result.score / elRate, rate: elRate }
+        elRate ? { score: result.score / elRate, rate: elRate } : {},
       );
     }
     return R;
@@ -54,6 +57,6 @@ export function matchList(what, whereList, options) {
       R.score = Math.min(R.score, el.score);
       return R;
     },
-    { score: Number.POSITIVE_INFINITY, matches: results }
+    { score: Number.POSITIVE_INFINITY, matches: results },
   );
 }

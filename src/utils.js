@@ -45,13 +45,13 @@ export function getDataExtractor(fields) {
       ? fields.reduce((R, el) => Object.assign(R, { [el]: 1 }), {})
       : isObject(fields)
         ? fields
-        : { [fields]: 1 }
+        : { [fields]: 1 },
   ).map(([k, rate]) => ({
     rate: parseFloat(rate) || 1,
     field: k,
-    path: k
+    path: k,
   }));
-  if (fieldsList.length == 0) return null;
+  if (fieldsList.length <= 0) return null;
   return (value) => {
     if (isString(fields)) return getValue(value, fields);
     return fieldsList.reduce(
@@ -59,10 +59,10 @@ export function getDataExtractor(fields) {
         R,
         { [el.field]: el.rate === 1
           ? getValue(value, el.path)
-          : { ...el, value: getValue(value, el.path) }
-        }
+          : { ...el, value: getValue(value, el.path) },
+        },
       ),
-      {}
+      {},
     );
   };
 }

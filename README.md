@@ -138,7 +138,7 @@ v.2.1.0
 - `score` - from `0.001` to `infinity`, less is better. If `withScore` is false then `score` is `1` always.
 
 - `matches` - It will be if `where` is *Array* or *Object*. It is object with results, *key* is index or key, value is *Object*
-  ```js
+  ```
       {
         score: Number,
         original: String,
@@ -146,14 +146,13 @@ v.2.1.0
         [wrapped: String],
         [ranges: Array]
       }
-
   ```
 
 - `wrapped` - contains wrapped original string or result of `withWrapper` function. It is undefined if `withWrapper` is false.
 
 - `ranges` - array with matched ranges `{ begin: Number, end: Number }`. It is undefined if `withRanges` is false.
 
-```javascript
+```js
 import { match } from 'fuzzy-tools';
 
 match('fzz', 'fuzzy', { withScore: true }); // { score: 1.74 }

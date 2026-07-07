@@ -1,5 +1,6 @@
-import { matchString } from '../../src';
+import { matchString } from '../importRouter';
 import { isRegExp } from '../../src/utils';
+
 
 const testData = [
   [['fuz'], false,
@@ -38,34 +39,34 @@ const rangesTestData = [
   [['fuzz'], 'fuz fu f fuzzy fuzzy', [{ begin: 9, end: 12 }]],
   [[/fuzz/], 'fuz fu f fuzzy fuzzy', [{ begin: 9, end: 12 }]],
   [['f', 'u', 'z', 'z', 'f'], 'fuz fu f fuzzy fuzzy',
-    [{ begin: 0, end: 2 }, { begin: 11, end: 11 }, { begin: 15, end: 15 }]
+    [{ begin: 0, end: 2 }, { begin: 11, end: 11 }, { begin: 15, end: 15 }],
   ],
   [[/f/, 'u', /z/, 'z', 'f'], 'fuz fu f fuzzy fuzzy',
-    [{ begin: 0, end: 2 }, { begin: 11, end: 11 }, { begin: 15, end: 15 }]
+    [{ begin: 0, end: 2 }, { begin: 11, end: 11 }, { begin: 15, end: 15 }],
   ],
   [['fu', 'z', 'z', 'f'], 'fuz fu f fuzzy fuzzy',
-    [{ begin: 0, end: 2 }, { begin: 11, end: 11 }, { begin: 15, end: 15 }]
+    [{ begin: 0, end: 2 }, { begin: 11, end: 11 }, { begin: 15, end: 15 }],
   ],
   [[/fu/, 'z', 'z', /f/], 'fuz fu f fuzzy fuzzy',
-    [{ begin: 0, end: 2 }, { begin: 11, end: 11 }, { begin: 15, end: 15 }]
+    [{ begin: 0, end: 2 }, { begin: 11, end: 11 }, { begin: 15, end: 15 }],
   ],
   [['f', 'uz', 'z', 'f'], 'fuz fu f fuzzy fuzzy',
-    [{ begin: 0, end: 2 }, { begin: 11, end: 11 }, { begin: 15, end: 15 }]
+    [{ begin: 0, end: 2 }, { begin: 11, end: 11 }, { begin: 15, end: 15 }],
   ],
   [['f', 'uzz', 'f'], 'fuz fu f fuzzy fuzzy',
-    [{ begin: 0, end: 0 }, { begin: 10, end: 12 }, { begin: 15, end: 15 }]
+    [{ begin: 0, end: 0 }, { begin: 10, end: 12 }, { begin: 15, end: 15 }],
   ],
   [['f', /uzz/, 'f'], 'fuz fu f fuzzy fuzzy',
-    [{ begin: 0, end: 0 }, { begin: 10, end: 12 }, { begin: 15, end: 15 }]
+    [{ begin: 0, end: 0 }, { begin: 10, end: 12 }, { begin: 15, end: 15 }],
   ],
   [[' ', ' ', 'f', 'uzz'], 'fuz fu f fuzzy fuzzy',
-    [{ begin: 3, end: 3 }, { begin: 6, end: 7 }, { begin: 10, end: 12 }]
+    [{ begin: 3, end: 3 }, { begin: 6, end: 7 }, { begin: 10, end: 12 }],
   ],
   [[/ /, / /, 'f', 'uzz'], 'fuz fu f fuzzy fuzzy',
-    [{ begin: 3, end: 3 }, { begin: 6, end: 7 }, { begin: 10, end: 12 }]
+    [{ begin: 3, end: 3 }, { begin: 6, end: 7 }, { begin: 10, end: 12 }],
   ],
   [['fuz', 'uzz'], 'fu f fuzzy fuzzy',
-    [{ begin: 5, end: 7 }, { begin: 12, end: 14 }]
+    [{ begin: 5, end: 7 }, { begin: 12, end: 14 }],
   ],
 ];
 
@@ -87,7 +88,7 @@ describe('matchString(...) with wordMode', () => {
       const result = matchString(
         [/[fuz]/, /[fz]/, /[fuz]/, /uzz/, /f/],
         'fuz fuf fuzzy fuzzy',
-        { withWrapper: '<{?}>' }
+        { withWrapper: '<{?}>' },
       ).wrapped;
       expect(result).toBe('<f>u<z> <f>uf f<uzz>y <f>uzzy');
     });
@@ -96,7 +97,7 @@ describe('matchString(...) with wordMode', () => {
       const result = matchString(
         [/[fuz]/, /[f]+/],
         'fuz fffffffuzzy fuzzy',
-        { withWrapper: '<{?}>' }
+        { withWrapper: '<{?}>' },
       ).wrapped;
       expect(result).toBe('<f>uz <fffffff>uzzy fuzzy');
     });
@@ -105,7 +106,7 @@ describe('matchString(...) with wordMode', () => {
       const result = matchString(
         [/[fuz]/, /[f]+?/],
         'fuz fffffffuzzy fuzzy',
-        { withWrapper: '<{?}>' }
+        { withWrapper: '<{?}>' },
       ).wrapped;
       expect(result).toBe('<f>uz <f>ffffffuzzy fuzzy');
     });

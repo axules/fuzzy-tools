@@ -1,4 +1,10 @@
-import { defaultOptions, isFunction, searchIn, isRegExp } from './utils';
+import {
+  defaultOptions,
+  isFunction,
+  searchIn,
+  isRegExp,
+} from './utils';
+
 
 function computeScore(begin, end, fullLength, wordNumber) {
   const wordLen = end - begin + 1;
@@ -14,10 +20,10 @@ export function matchString(what, where, options) {
     caseSensitive,
     withScore,
     withWrapper,
-    withRanges
+    withRanges,
   } = defaultOptions(options);
   const isWords = Array.isArray(what);
-  if (isWords && what.length == 0) return null;
+  if (isWords && what.length <= 0) return null;
 
   const preparedWhat = caseSensitive
     ? (isWords ? what : String(what))
@@ -37,8 +43,8 @@ export function matchString(what, where, options) {
   let ranges = null;
   let chunkBegin = 0;
   let scoreList = [];
-  const wrapperFunc =
-    !withWrapper || isFunction(withWrapper)
+  const wrapperFunc
+    = !withWrapper || isFunction(withWrapper)
       ? withWrapper
       : (w) => withWrapper.replace('{?}', w);
 
@@ -59,12 +65,12 @@ export function matchString(what, where, options) {
       if (withRanges) {
         ranges.push({
           begin: chunkBegin,
-          end: Math.min(prev, originalWhere.length - 1)
+          end: Math.min(prev, originalWhere.length - 1),
         });
       }
       if (withScore) {
         scoreList.push(
-          computeScore(chunkBegin, prev, preparedWhat.length, scoreList.length)
+          computeScore(chunkBegin, prev, preparedWhat.length, scoreList.length),
         );
       }
       chunkBegin = next;
@@ -92,9 +98,9 @@ export function matchString(what, where, options) {
     {
       score: withScore
         ? scoreList.reduce((p, c) => p + c, 0)
-        : 1
+        : 1,
     },
     withWrapper ? { wrapped } : {},
-    withRanges ? { ranges } : {}
+    withRanges ? { ranges } : {},
   );
 }

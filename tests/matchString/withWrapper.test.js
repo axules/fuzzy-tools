@@ -1,4 +1,5 @@
-import { matchString } from '../../src';
+import { matchString } from '../importRouter';
+
 
 const testData = [
   ['fuz', 'fuzzy', '<{?}>', '<fuz>zy'],
