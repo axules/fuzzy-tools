@@ -1,4 +1,9 @@
-import { match , matchString , matchList } from '../../src';
+import {
+  match,
+  matchString,
+  matchList,
+} from '../importRouter';
+
 
 jest.mock('../../src/matchString', () => {
   return {

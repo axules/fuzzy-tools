@@ -1,4 +1,5 @@
-import { matchList } from '../../src';
+import { matchList } from '../importRouter';
+
 
 const testData = [
   ['fuz', ['fuz--', '--fuz'], '<{?}>', ['<fuz>--', '--<fuz>'], ['0', '1']],

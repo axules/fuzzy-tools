@@ -1,13 +1,18 @@
-import { defaultOptions, getDataExtractor, isFunction } from './utils';
+import {
+  defaultOptions,
+  getDataExtractor,
+  isFunction,
+} from './utils';
 import { match } from './match';
+
 
 export function filter(what, dataList, options) {
   if (!what || !dataList || !Array.isArray(dataList)) {
     return [];
   }
   const { extract, itemWrapper } = defaultOptions(options);
-  const extractFunc =
-    !extract || isFunction(extract) ? extract : getDataExtractor(extract);
+  const extractFunc
+    = !extract || isFunction(extract) ? extract : getDataExtractor(extract);
 
   return dataList.reduce((R, row, i) => {
     const data = extract ? extractFunc(row) : row;

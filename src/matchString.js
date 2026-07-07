@@ -1,4 +1,10 @@
-import { defaultOptions, isFunction } from './utils';
+import {
+  defaultOptions,
+  isFunction,
+  searchIn,
+  isRegExp,
+} from './utils';
+
 
 function computeScore(begin, end, fullLength, wordNumber) {
   const wordLen = end - begin + 1;
@@ -14,14 +20,18 @@ export function matchString(what, where, options) {
     caseSensitive,
     withScore,
     withWrapper,
-    withRanges
+    withRanges,
   } = defaultOptions(options);
   const isWords = Array.isArray(what);
-  if (isWords && what.length == 0) return null;
+  if (isWords && what.length <= 0) return null;
 
   const preparedWhat = caseSensitive
     ? (isWords ? what : String(what))
-    : (isWords ? what.map(it => String(it).toLocaleLowerCase()) : String(what).toLocaleLowerCase());
+    : (
+      isWords
+        ? what.map(it => (isRegExp(it) ? it : String(it).toLocaleLowerCase()))
+        : String(what).toLocaleLowerCase()
+    );
   const originalWhere = String(where);
   if (!preparedWhat || !originalWhere || (!isWords && preparedWhat.length > originalWhere.length)) {
     return null;
@@ -33,8 +43,8 @@ export function matchString(what, where, options) {
   let ranges = null;
   let chunkBegin = 0;
   let scoreList = [];
-  const wrapperFunc =
-    !withWrapper || isFunction(withWrapper)
+  const wrapperFunc
+    = !withWrapper || isFunction(withWrapper)
       ? withWrapper
       : (w) => withWrapper.replace('{?}', w);
 
@@ -55,12 +65,12 @@ export function matchString(what, where, options) {
       if (withRanges) {
         ranges.push({
           begin: chunkBegin,
-          end: Math.min(prev, originalWhere.length - 1)
+          end: Math.min(prev, originalWhere.length - 1),
         });
       }
       if (withScore) {
         scoreList.push(
-          computeScore(chunkBegin, prev, preparedWhat.length, scoreList.length)
+          computeScore(chunkBegin, prev, preparedWhat.length, scoreList.length),
         );
       }
       chunkBegin = next;
@@ -70,13 +80,13 @@ export function matchString(what, where, options) {
   let pos = -1;
   for (let i = 0; i < preparedWhat.length; i++) {
     const chunk = isWords ? preparedWhat[i] : preparedWhat.charAt(i);
-    let nextPos = (preparedWhere || originalWhere).indexOf(chunk, pos + 1);
+    let [nextPos, found] = searchIn(preparedWhere || originalWhere, chunk, pos + 1);
 
     if (nextPos < 0) return null;
 
-    if (isWords && chunk.length > 1) {
+    if (isWords && found.length > 1) {
       wordAction(pos, nextPos);
-      nextPos = nextPos + chunk.length - 1;
+      nextPos = nextPos + found.length - 1;
       pos = nextPos - 1;
     }
     wordAction(pos, nextPos);
@@ -88,9 +98,9 @@ export function matchString(what, where, options) {
     {
       score: withScore
         ? scoreList.reduce((p, c) => p + c, 0)
-        : 1
+        : 1,
     },
     withWrapper ? { wrapped } : {},
-    withRanges ? { ranges } : {}
+    withRanges ? { ranges } : {},
   );
 }

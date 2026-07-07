@@ -1,4 +1,5 @@
-import { matchList } from '../../src';
+import { matchList } from '../importRouter';
+
 
 const testData = [
   ['fuz', 7, ['fuz--', '--fuz', 'f--uz', 'fu--z', '-fuz-', 'f-u-z', 'xxfxxx-xxxuxxx-xxzxxxzzzz fu zzz']],
@@ -11,8 +12,8 @@ const testData = [
       'vwl2 bj 0wt1i rm5u-2io 48kl4- 7 _4 mte9u0i 7v ur4yowf-jt5w x6hw6gt 6ihvmv 084ng1ji w99ikng_59 u7j63q ',
       'vu80u581q',
       '----v----u-80u58--1q---',
-    ]
-  ]
+    ],
+  ],
 ];
 
 describe('matchList(...)', () => {
@@ -52,14 +53,14 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fzz',
       [{ value: 'fuzza', rate: 0.75 }, { value: 'fuzzy', rate: 0.10 }],
-      { withScore: true }
+      { withScore: true },
     );
     expect(result).toEqual({
       score: 2.3708148148148145,
       matches: {
         0: { score: 2.3708148148148145, original: 'fuzza', rate: 0.75, index: 0 },
-        1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 }
-      }
+        1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 },
+      },
     });
   });
 
@@ -67,14 +68,14 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fzz',
       [{ value: 'fuzza', rate: 0.75 }, 'fuzzy'],
-      { withScore: true }
+      { withScore: true },
     );
     expect(result).toEqual({
       score: 1.778111111111111,
       matches: {
         0: { score: 2.3708148148148145, original: 'fuzza', rate: 0.75, index: 0 },
-        1: { score: 1.778111111111111, original: 'fuzzy', index: 1 }
-      }
+        1: { score: 1.778111111111111, original: 'fuzzy', index: 1 },
+      },
     });
   });
 
@@ -82,14 +83,14 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fzz',
       ['fuzza', 'fuzzy'],
-      { rates: [0.75, 0.10], withScore: true }
+      { rates: [0.75, 0.10], withScore: true },
     );
     expect(result).toEqual({
       score: 2.3708148148148145,
       matches: {
         0: { score: 2.3708148148148145, original: 'fuzza', rate: 0.75, index: 0 },
-        1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 }
-      }
+        1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 },
+      },
     });
   });
 
@@ -97,14 +98,14 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fzz',
       ['fuzza', 'fuzzy'],
-      { rates: { 1: 0.10 }, withScore: true }
+      { rates: { 1: 0.10 }, withScore: true },
     );
     expect(result).toEqual({
       score: 1.778111111111111,
       matches: {
         0: { score: 1.778111111111111, original: 'fuzza', index: 0 },
-        1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 }
-      }
+        1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 },
+      },
     });
   });
 
@@ -112,14 +113,14 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fzz',
       ['fuzza', 'fuzzy'],
-      { rates: { '1': 0.10 }, withScore: true }
+      { rates: { 1: 0.10 }, withScore: true },
     );
     expect(result).toEqual({
       score: 1.778111111111111,
       matches: {
         0: { score: 1.778111111111111, original: 'fuzza', index: 0 },
-        1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 }
-      }
+        1: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 1 },
+      },
     });
   });
 
@@ -127,14 +128,14 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fzz',
       { v1: { value: 'fuzza', rate: 0.75 }, v2: { value: 'fuzzy', rate: 0.10 } },
-      { withScore: true }
+      { withScore: true },
     );
     expect(result).toEqual({
       score: 2.3708148148148145,
       matches: {
         v1: { score: 2.3708148148148145, original: 'fuzza', rate: 0.75, index: 'v1' },
-        v2: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 'v2' }
-      }
+        v2: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 'v2' },
+      },
     });
   });
 
@@ -142,14 +143,14 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fzz',
       { v1: 'fuzza', v2: { value: 'fuzzy', rate: 0.10 } },
-      { withScore: true }
+      { withScore: true },
     );
     expect(result).toEqual({
       score: 1.778111111111111,
       matches: {
         v1: { score: 1.778111111111111, original: 'fuzza', index: 'v1' },
-        v2: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 'v2' }
-      }
+        v2: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 'v2' },
+      },
     });
   });
 
@@ -165,7 +166,7 @@ describe('matchList(...)', () => {
         v1: { score: 1.778111111111111, original: 'fuzza', index: 'v1' },
         v2: { score: 17.78111111111111, original: 'fuzzy', rate: 0.10, index: 'v2' },
         v3: { score: 1.778111111111111, original: 'fazza', index: 'v3' },
-      }
+      },
     });
   });
 
@@ -182,7 +183,7 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fuzzz',
       [{ value: 'fu--zz.z', rate: 0.5 }, '---u----', '-z-', 'f----', '----fuz----zz'],
-      { withScore: true }
+      { withScore: true },
     );
     expect(Object.values(result.matches).length).toBe(2);
     expect(Object.keys(result.matches)).toEqual(['0', '4']);
@@ -204,7 +205,7 @@ describe('matchList(...)', () => {
     const result = matchList(
       'fuzzz',
       { v1: { value: 'fu--zz.z', rate: 0.5 }, v2: '---u----', v3: '-z-', v4: 'f----', v5: '----fuz----zz' },
-      { withScore: true }
+      { withScore: true },
     );
     expect(Object.values(result.matches).length).toBe(2);
     expect(Object.keys(result.matches)).toEqual(['v1', 'v5']);

@@ -1,8 +1,9 @@
-import { filter } from '../../src';
+import { filter } from '../importRouter';
+
 
 describe('filter', () => {
   test('should return empty list', () => {
-    const emptyData = [['', [1,2]], [null, [1,2]], ['sss', ''], ['sss', []], ['sss', 112312], ['fuz1', ['fuz-', 'f-u-z']]];
+    const emptyData = [['', [1, 2]], [null, [1, 2]], ['sss', ''], ['sss', []], ['sss', 112312], ['fuz1', ['fuz-', 'f-u-z']]];
     emptyData.forEach(([why, where]) => {
       expect(filter(why, where)).toEqual([]);
     });
@@ -47,7 +48,7 @@ describe('filter', () => {
     const result = filter(
       'fuZ',
       items,
-      { extract: ['v', 'v2'], itemWrapper: (el, r) => ({ ...el, decision: r }), withScore: true }
+      { extract: ['v', 'v2'], itemWrapper: (el, r) => ({ ...el, decision: r }), withScore: true },
     );
     expect(result)
       .toEqual([
@@ -96,7 +97,7 @@ describe('filter', () => {
           },
           // should be a min of matched scores
           score: 1.778111111111111,
-        } }
+        } },
       ]);
   });
 
@@ -105,7 +106,7 @@ describe('filter', () => {
     const result = filter('fuZ', items, {
       extract: ['v', 'v2'],
       withWrapper: '<{?}>',
-      itemWrapper: (el, { matches: m }) => ({ v: (m.v||m.v2).wrapped })
+      itemWrapper: (el, { matches: m }) => ({ v: (m.v || m.v2).wrapped }),
     });
     expect(result)
       .toEqual([{ v: '---<f>-<u>-<z>' }, { v: '<f>f<u>u<z>z' }, { v: '<fuz>' }]);
@@ -160,8 +161,8 @@ describe('filter', () => {
       {
         extract: { v1: 0.75, v2: 1 },
         itemWrapper: (el, match) => ({ v: el.v1 || el.v2, score: match.score }),
-        withScore: true
-      }
+        withScore: true,
+      },
     );
     expect(result)
       .toEqual([{ v: '---f-u-z', score: 9.48148148148148 }, { v: 'fuZ', score: 0.001 }]);

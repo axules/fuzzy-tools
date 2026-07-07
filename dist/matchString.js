@@ -1,41 +1,40 @@
 "use strict";
 
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.matchString = matchString;
 var _utils = require("./utils");
 function computeScore(begin, end, fullLength, wordNumber) {
-  var wordLen = end - begin + 1;
-  var kd = 1 / fullLength * wordLen;
-  var kp = begin || 0.001;
-  var kw = 1 + 1 / fullLength * wordNumber;
+  const wordLen = end - begin + 1;
+  const kd = 1 / fullLength * wordLen;
+  const kp = begin || 0.001;
+  const kw = 1 + 1 / fullLength * wordNumber;
   return kd * kp * kw;
 }
 function matchString(what, where, options) {
   if (!what || !where) return null;
-  var _defaultOptions = (0, _utils.defaultOptions)(options),
-    caseSensitive = _defaultOptions.caseSensitive,
-    withScore = _defaultOptions.withScore,
-    withWrapper = _defaultOptions.withWrapper,
-    withRanges = _defaultOptions.withRanges;
-  var isWords = Array.isArray(what);
-  if (isWords && what.length == 0) return null;
-  var preparedWhat = caseSensitive ? isWords ? what : String(what) : isWords ? what.map(function (it) {
-    return String(it).toLocaleLowerCase();
-  }) : String(what).toLocaleLowerCase();
-  var originalWhere = String(where);
+  const {
+    caseSensitive,
+    withScore,
+    withWrapper,
+    withRanges
+  } = (0, _utils.defaultOptions)(options);
+  const isWords = Array.isArray(what);
+  if (isWords && what.length <= 0) return null;
+  const preparedWhat = caseSensitive ? isWords ? what : String(what) : isWords ? what.map(it => (0, _utils.isRegExp)(it) ? it : String(it).toLocaleLowerCase()) : String(what).toLocaleLowerCase();
+  const originalWhere = String(where);
   if (!preparedWhat || !originalWhere || !isWords && preparedWhat.length > originalWhere.length) {
     return null;
   }
   // preparedWhere will be undefined if caseSensitive is true, it is needed to save memory
-  var preparedWhere = caseSensitive ? undefined : originalWhere.toLocaleLowerCase();
-  var wrapped = null;
-  var ranges = null;
-  var chunkBegin = 0;
-  var scoreList = [];
-  var wrapperFunc = !withWrapper || (0, _utils.isFunction)(withWrapper) ? withWrapper : function (w) {
-    return withWrapper.replace('{?}', w);
-  };
-  var wordAction = function wordAction(prev, next) {
+  const preparedWhere = caseSensitive ? undefined : originalWhere.toLocaleLowerCase();
+  let wrapped = null;
+  let ranges = null;
+  let chunkBegin = 0;
+  let scoreList = [];
+  const wrapperFunc = !withWrapper || (0, _utils.isFunction)(withWrapper) ? withWrapper : w => withWrapper.replace('{?}', w);
+  const wordAction = (prev, next) => {
     if (prev < 0) {
       if (withWrapper) {
         wrapped = next > 0 ? originalWhere.slice(0, next) : '';
@@ -46,7 +45,7 @@ function matchString(what, where, options) {
       chunkBegin = next;
     } else if (next - prev > 1) {
       if (withWrapper) {
-        var chunk = originalWhere.slice(chunkBegin, prev + 1);
+        const chunk = originalWhere.slice(chunkBegin, prev + 1);
         wrapped += wrapperFunc(chunk) + originalWhere.slice(prev + 1, next);
       }
       if (withRanges) {
@@ -61,14 +60,14 @@ function matchString(what, where, options) {
       chunkBegin = next;
     }
   };
-  var pos = -1;
-  for (var i = 0; i < preparedWhat.length; i++) {
-    var chunk = isWords ? preparedWhat[i] : preparedWhat.charAt(i);
-    var nextPos = (preparedWhere || originalWhere).indexOf(chunk, pos + 1);
+  let pos = -1;
+  for (let i = 0; i < preparedWhat.length; i++) {
+    const chunk = isWords ? preparedWhat[i] : preparedWhat.charAt(i);
+    let [nextPos, found] = (0, _utils.searchIn)(preparedWhere || originalWhere, chunk, pos + 1);
     if (nextPos < 0) return null;
-    if (isWords && chunk.length > 1) {
+    if (isWords && found.length > 1) {
       wordAction(pos, nextPos);
-      nextPos = nextPos + chunk.length - 1;
+      nextPos = nextPos + found.length - 1;
       pos = nextPos - 1;
     }
     wordAction(pos, nextPos);
@@ -76,12 +75,10 @@ function matchString(what, where, options) {
   }
   wordAction(pos, pos + originalWhere.length);
   return Object.assign({
-    score: withScore ? scoreList.reduce(function (p, c) {
-      return p + c;
-    }, 0) : 1
+    score: withScore ? scoreList.reduce((p, c) => p + c, 0) : 1
   }, withWrapper ? {
-    wrapped: wrapped
+    wrapped
   } : {}, withRanges ? {
-    ranges: ranges
+    ranges
   } : {});
 }

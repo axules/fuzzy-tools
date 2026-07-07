@@ -2,8 +2,9 @@ import all, {
   match,
   matchString,
   matchList,
-  filter
-} from '../src/index';
+  filter,
+} from './importRouter';
+
 
 const testData = [
   ['match', match, 3],
@@ -19,13 +20,12 @@ describe('index.js', () => {
   });
 
   it('default export contains 4 functions', () => {
-    // eslint-disable-next-line import/no-named-as-default-member
     expect(all.match).toBe(match);
-    // eslint-disable-next-line import/no-named-as-default-member
+
     expect(all.matchString).toBe(matchString);
-    // eslint-disable-next-line import/no-named-as-default-member
+
     expect(all.matchList).toBe(matchList);
-    // eslint-disable-next-line import/no-named-as-default-member
+
     expect(all.filter).toBe(filter);
   });
 });
